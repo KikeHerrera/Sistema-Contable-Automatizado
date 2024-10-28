@@ -1,17 +1,3 @@
-document.getElementById('loginForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    var username = document.getElementById('username').value;
-    var password = document.getElementById('password').value;
-
-    /*if (username === "" || password === "") {
-        alert("Por favor, complete ambos campos.");
-    } else {
-        alert("Inicio de sesión exitoso.");
-        // Aquí puedes agregar la lógica para enviar los datos al servidor
-    }*/
-});
-
 
 const togglePassword = document.querySelector('#togglePassword');
 const password = document.querySelector('#password');
