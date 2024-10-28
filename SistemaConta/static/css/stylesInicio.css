@@ -21,21 +21,40 @@ header {
     border-bottom: 1px solid #ccc;
     position: fixed;
     top: 0;
-}
-
-nav {
     display: flex;
     justify-content: center;
 }
 
-nav a {
+nav {
+    display: flex;
+    width: 80%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links {
+    display: flex;
+}
+
+.nav-links a {
     margin: 0 10px;
     color: #007bff;
     text-decoration: none;
 }
 
-nav a:hover {
+.nav-links a:hover {
     text-decoration: underline;
+}
+
+.logout-button {
+    margin-left: auto; /* Empuja el botón hacia la derecha */
+}
+
+.logout-button img {
+    width: 24px; /* Ajusta el tamaño según tus necesidades */
+    height: 24px;
+    vertical-align: middle;
+    
 }
 
 main {
