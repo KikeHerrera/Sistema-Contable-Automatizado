@@ -22,4 +22,5 @@ urlpatterns = [
     path('', include('SistemaConta.urls')),
     path('index/', include('SistemaConta.urls')),
     path('prueba/', include('SistemaConta.urls')),
+    path('comprobaciones/', include('SistemaConta.urls')),
 ]
