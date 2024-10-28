@@ -27,9 +27,12 @@ header {
 
 nav {
     display: flex;
-    width: 80%;
     justify-content: space-between;
     align-items: center;
+    max-width: 1200px; /* Limita el ancho máximo para pantallas grandes */
+    margin: 0 auto;
+    padding: 10px;
+    width: 100%; /* Ocupa todo el ancho de la pantalla */
 }
 
 .nav-links {
