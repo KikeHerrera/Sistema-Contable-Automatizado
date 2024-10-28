@@ -1,0 +1,138 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('../assets/fondo.jpg'); /* Reemplaza con la ruta de tu imagen de fondo */
+    background-size: cover; /* Hace que la imagen cubra todo el fondo */
+    background-position: center; /* Centra la imagen de fondo */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+}
+
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-box {
+    background-color: #fff;
+    padding: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+}
+
+.icon-container {
+    margin-bottom: 20px;
+}
+
+.logo-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.input-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-container i {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    color: #888;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 10px 10px 10px 40px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+    outline: none;
+    border-color: #6c63ff;
+}
+
+.login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #5a53d8;
+}
+
+.fa {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}
+
+/* Agrega estas reglas al CSS existente */
+
+/* Para alinear las imágenes con los campos de entrada */
+.input-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.user-icon, .lock-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px; /* Tamaño pequeño */
+    height: 20px;
+}
+
+/* Ajustes para los inputs */
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 10px 10px 10px 40px; /* Deja espacio suficiente para el icono a la izquierda */
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+    outline: none;
+    border-color: #6c63ff;
+}
+
+/* Estilos para el ícono del ojo */
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.eye-icon {
+    width: 20px;
+    height: 20px;
+}

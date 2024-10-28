@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantalla de Inicio de Sesión</title>
+    <link rel="stylesheet" href="../static/css/stylesIndex.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="icon-container">
+                <img src="../static/assets/LOGO.png" alt="User Icon" class="logo-icon">
+            </div>
+            <h2>INICIAR SESIÓN</h2>
+            <form id="loginForm" method="POST" action="#">
+                {% csrf_token %}
+                <div class="input-container">
+                    <img src="../static/assets/user.png" alt="User Icon" class="user-icon">
+                    <input type="text" id="username" placeholder="USERNAME" required name =  "username">
+                </div>
+                <div class="input-container">
+                    <img src="../static/assets/lock.png" alt="Lock Icon" class="lock-icon">
+                    <input type="password" id="password" placeholder="*********" required name = "password">
+                    <span class="toggle-password">
+                        <img src="../static/assets/eye.png" alt="Show Password" id="togglePassword" class="eye-icon">
+                    </span>
+                </div>
+                
+                <button type="submit" class="login-button">LOGIN</button>
+                <div class="error-container" id="error-container">{{ error }}</div>
+            </form>
+        </div>
+    </div>
+
+    <!--<script src="../static/js/scriptIndex.js"></script>-->
+</body>
+</html>
