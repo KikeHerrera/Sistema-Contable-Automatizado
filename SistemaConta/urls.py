@@ -10,5 +10,7 @@ urlpatterns = [
     path('comprobaciones/', views.pantallaComprobacion_view, name='comprobaciones'),
     path('transaccion/', views.transaccion_view, name='transaccion'),
     path('manoObra/', views.manoObra_view, name='manoObra'),
+    path('estados/', views.pantallaEstados_view, name='estados'),
+    path('catalogo/', views.pantallaCatalogo_view, name='catalogo'),
 ]
 
