@@ -36,3 +36,11 @@ def transaccion_view(request):
 @login_required
 def manoObra_view(request):
     return render(request, 'ManodeObra.html')
+
+@login_required
+def pantallaEstados_view(request):
+    return render(request, 'pantalla_estados.html')
+
+@login_required
+def pantallaCatalogo_view(request):
+    return render(request, 'pantalla_catalogo.html')
