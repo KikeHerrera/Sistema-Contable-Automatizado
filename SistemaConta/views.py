@@ -25,7 +25,6 @@ def index_view(request):
 def prueba_view(request):
     return render(request, 'Inicio.html')
 
-@login_required
 def pantallaComprobacion_view(request):
     return render(request, 'pantalla_comprobacion.html')
 
