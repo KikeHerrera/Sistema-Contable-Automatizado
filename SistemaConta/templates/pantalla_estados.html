@@ -9,13 +9,14 @@
 <body>
 
 
-    <div class="table-container">
-        <h2>Balance de Comprobación</h2>
+
+    <div class="estado-de-resultados">
+        <h2>Estado de resultados</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Código de Cuenta</th>
-                    <th>Nombre de Cuenta</th>
+                    <th>Código</th>
+                    <th>Cuenta</th>
                     <th>Cargo</th>
                     <th>Abono</th>
                 </tr>
@@ -25,24 +26,30 @@
             </tbody>
         </table>
     </div>
+    <div class="output">   
+        <h2>Utilidad o perdida</h2>
+        <center> <input size="25" name="utilidad_perdida" placeholder="Esta sera la utilidad o perdida" disabled> </center>
+    </div>      
 
-    <div class="table-container">
-        <h2>Libro Mayor</h2>
+    <div class="estado-de-capital">
+        <h2>Estado de capital</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Fecha</th>
-                    <th>Descripción</th>
-                    <th>Monto</th>
-                    <th>IVA</th>
-                    <th>Cuenta de Cargo</th>
-                    <th>Cuenta Abono</th>
+                    <th>Codigo</th>
+                    <th>Cuenta</th>
+                    <th>Cargo</th>
+                    <th>Abono</th>
                 </tr>
             </thead>
             <tbody>
                 <!-- Filas de datos aquí -->
             </tbody>
         </table>
+    </div>
+    <div class="output">   
+        <h2>Nuevo capital</h2>
+        <center> <input size="20" name="nuevo-capital" placeholder="Este sera el nuevo capital" disabled> </center>
     </div>
 
 </body>

@@ -23,4 +23,6 @@ urlpatterns = [
     path('index/', include('SistemaConta.urls')),
     path('prueba/', include('SistemaConta.urls')),
     path('comprobaciones/', include('SistemaConta.urls')),
+    path('estados/', include('SistemaConta.urls')),
+    path('catalogo/', include('SistemaConta.urls')),
 ]
