@@ -31,3 +31,7 @@ def pantallaComprobacion_view(request):
 @login_required
 def transaccion_view(request):
     return render(request, 'Transaccion.html')
+
+@login_required
+def manoObra_view(request):
+    return render(request, 'ManodeObra.html')
