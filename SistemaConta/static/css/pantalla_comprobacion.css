@@ -3,7 +3,7 @@ body {
 }
 
 .table-container {
-    margin: 20px;
+    margin: 75px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -68,4 +68,58 @@ th {
     cursor: pointer; /* Cambiar cursor al pasar por encima */
     border-radius: 5px; /* Bordes redondeados */
     transition: background-color 0.3s; /* Transición suave */
+}
+
+/* General Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Header Styles */
+header {
+    width: 100%;
+    padding: -10px 0;
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    position: fixed;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px; /* Espacio entre los enlaces */
+}
+
+.nav-links a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+.logout-button {
+    margin-left: auto;
+}
+
+.logout-button img {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
 }
