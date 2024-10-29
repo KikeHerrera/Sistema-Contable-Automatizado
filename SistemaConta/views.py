@@ -27,3 +27,7 @@ def prueba_view(request):
 
 def pantallaComprobacion_view(request):
     return render(request, 'pantalla_comprobacion.html')
+
+@login_required
+def transaccion_view(request):
+    return render(request, 'Transaccion.html')
