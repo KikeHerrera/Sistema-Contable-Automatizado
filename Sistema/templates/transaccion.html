@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Registrar Transacción</h1>
+
+<form method="POST">
+    {% csrf_token %} 
+    
+        {{transaccion_form.as_p}}
+        {{asiento_formset.as_p}}
+
+
+        {% if error %}
+        <p style="color: red;"><strong>{{error}}</strong></p>
+        {% endif %}
+        
+        {% if not readOnly %}
+        <button>    
+            Guardar Transacción
+        </button>
+        {% endif %}
+
+
+</form> 
+{% endblock %}

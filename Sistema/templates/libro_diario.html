@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <h1>Libro Diario</h1>
+    <form method="get" action=".">
+        <label for="partida_diaria">Selecciona una Partida Diaria:</label>
+        <select name="partida_diaria" id="partida_diaria" onchange="this.form.submit()">
+            <option value="">-- Seleccione --</option>
+            {% for partida in partidas_diarias %}
+                <option value="{{ partida.id_partida_diaria }}"
+                    {% if partida.id_partida_diaria == request.GET.partida_diaria %}selected{% endif %}>
+                    {{ partida.fecha }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+    {% if transacciones %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha de Operación</th>
+                <th>Descripción</th>
+                <th>Cuenta Débito</th>
+                <th>Cuenta Crédito</th>
+                <th>Monto</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaccion in transacciones %}
+            <tr>
+                <td>{{ transaccion.id_transaccion }}</td>
+                <td>{{ transaccion.fecha_operacion }}</td>
+                <td>{{ transaccion.contenido }}</td>
+                <td>{{ transaccion.asientos.all.0.id_cuenta.nombre }}</td>
+                <td>{{ transaccion.asientos.all.1.id_cuenta.nombre }}</td>
+                <td>{{ transaccion.asientos.all.0.monto_debe|default_if_none:transaccion.asientos.all.1.monto_haber }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>Por favor seleccione un libro diario para ver las transacciones.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
