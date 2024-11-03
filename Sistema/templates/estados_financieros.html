@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Estados Financieros</h1>
+
+<div class="container">
+    <a href="{% url 'balance_general' %}" class="button">Balance General</a>
+    <a href="{% url 'estado_de_resultados' %}" class="button active">Estado de Resultados</a>
+    <a href="{% url 'estado_de_capital' %}" class="button">Estado de Capital</a>
+
+</div>
+
+{% endblock %}

@@ -43,7 +43,7 @@ def libro_diario(request):
     # Renderizar la página de inicio con la lista de partidas diarias y transacciones
     return render(request, 'libro_diario.html', {
         'partidas_diarias': partidas_diarias,
-        'transacciones': transacciones,
+        'transacciones': transacciones.order_by('-fecha_operacion', '-id_transaccion'),
         'partida_seleccionada': partida_seleccionada
     })
 
@@ -169,10 +169,33 @@ def estado_de_resultados(request):
     return render(request, 'estado_de_resultados.html')
 
 def libro_mayor(request):
-    return render(request, 'libro_mayor.html')
+    # Obtener todas las partidas diarias disponibles
+    partidas_diarias = PartidaDiaria.objects.all()
+
+    # Obtener todas las transacciones ordenadas por fecha, de más recientes a más antiguas
+    transacciones = Transaccion.objects.all().order_by('-fecha_operacion', '-id_transaccion')
+
+    # Renderizar la página de inicio con la lista de partidas diarias y transacciones
+    return render(request, 'libro_mayor.html', {
+        'partidas_diarias': partidas_diarias,
+        'transacciones': transacciones,
+    })
+
 
 def cierre_contable(request):
     return render(request, 'cierre_contable.html')
 
 def handle_not_found(request, exception):
     return redirect('home')
+
+
+def estados_financieros(request):
+    return render(request, 'estados_financieros.html')
+
+def estado_de_capital(request):
+    return render(request, 'estado_de_capital.html')
+
+
+
+def balance_general(request):
+    return render(request, 'balance_general.html')

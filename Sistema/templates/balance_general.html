@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Balance General</h1>
+<form method="get" action=".">
+    <label for="balance_general">Selecciona un Balance General:</label>
+    <select name="balance_general" id="balance_general" onchange="this.form.submit()">
+        <option value="">-- Seleccione --</option>
+        {% for informe in balances_generales %}
+            <option value="{{ informe.id_balance_general }}"
+                {% if informe.id_balance_general == request.GET.balance_general|default_if_none:'' %}selected{% endif %}>
+                {{ informe.fecha }}
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">Generar Balance General</button>
+</form>
+
+{% if activos %}
+<!-- ACTIVOS -->
+<h2>Activos ${{activos.saldo}}</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre de Cuenta</th>
+                <th>Saldo Deudor</th>
+                <th>Saldo Acreedor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cuenta in cuentas %}
+            <tr>
+                <td>{{ cuenta_activos.codigo_cuenta }}</td>
+                <td>{{ cuenta_activos.nombre }}</td>
+                <td>{{ cuenta_activos.saldo_deudor|floatformat:2 }}</td>
+                <td>{{ cuenta_activos.saldo_acreedor|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<!-- PASIVOS -->
+<h2>Pasivos ${{pasivos.saldo}}</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Nombre de Cuenta</th>
+            <th>Saldo Deudor</th>
+            <th>Saldo Acreedor</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cuenta in cuentas %}
+        <tr>
+            <td>{{ cuenta_pasivos.codigo_cuenta }}</td>
+            <td>{{ cuenta_pasivos.nombre }}</td>
+            <td>{{ cuenta_pasivos.saldo_deudor|floatformat:2 }}</td>
+            <td>{{ cuenta_pasivos.saldo_acreedor|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Patrimonio -->
+<h2>Patrimonio ${{patrimonio.saldo}}</h2> 
+
+    <table>
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre de Cuenta</th>
+                <th>Saldo Deudor</th>
+                <th>Saldo Acreedor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cuenta in cuentas %}
+            <tr>
+                <td>{{ cuenta_patrimonio.codigo_cuenta }}</td>
+                <td>{{ cuenta_patrimonio.nombre }}</td>
+                <td>{{ cuenta_patrimonio.saldo_deudor|floatformat:2 }}</td>
+                <td>{{ cuenta_patrimonio.saldo_acreedor|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<!-- Balance -->
+<h2>Balance </h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Categoría</th>
+                <th>Saldo Deudor</th>
+                <th>Saldo Acreedor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Activos</td>
+                <td>{{ activos.saldo_deudor|floatformat:2 }}</td>
+                <td>{{ activos.saldo_acreedor|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Pasivos</td>
+                <td>{{ pasivos.saldo_deudor|floatformat:2 }}</td>
+                <td>{{ pasivos.saldo_acreedor|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Patrimonio</td>
+                <td>{{ patrimonio.saldo_deudor|floatformat:2 }}</td>
+                <td>{{ patrimonio.saldo_acreedor|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td>{{ total_debe |floatformat:2 }}</td>
+                <td>{{ total_haber |floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% else %}
+    <p>Por favor seleccione o genere un balance general.</p>
+{% endif %}
+
+{% endblock %}
