@@ -9,16 +9,19 @@
         {% for informe in balances_generales %}
             <option value="{{ informe.id_balance_general }}"
                 {% if informe.id_balance_general == request.GET.balance_general|default_if_none:'' %}selected{% endif %}>
-                {{ informe.fecha }}
+                {{ informe }}
             </option>
         {% endfor %}
     </select>
-    <button type="submit" class="btn btn-primary">Generar Balance General</button>
+    <button type="submit" name="generar_balance_general" value="true" class="btn btn-primary">Generar Balance General</button>
 </form>
 
-{% if activos %}
+
+
+{% if balance_seleccionado %}
+<h1>{{ balance_seleccionado }}</h1>
 <!-- ACTIVOS -->
-<h2>Activos ${{activos.saldo}}</h2>
+<h2>Activos ${{activos_saldo}}</h2>
 
     <table>
         <thead>
@@ -30,19 +33,19 @@
             </tr>
         </thead>
         <tbody>
-            {% for cuenta in cuentas %}
+            {% for cuenta in cuentas_activos %}
             <tr>
-                <td>{{ cuenta_activos.codigo_cuenta }}</td>
-                <td>{{ cuenta_activos.nombre }}</td>
-                <td>{{ cuenta_activos.saldo_deudor|floatformat:2 }}</td>
-                <td>{{ cuenta_activos.saldo_acreedor|floatformat:2 }}</td>
+                <td>{{ cuenta.codigo }}</td>
+                <td>{{ cuenta.nombre }}</td>
+                <td>{{ cuenta.saldo_deudor|floatformat:2 }}</td>
+                <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
 <!-- PASIVOS -->
-<h2>Pasivos ${{pasivos.saldo}}</h2>
+<h2>Pasivos ${{pasivos_saldo}}</h2>
 
 <table>
     <thead>
@@ -54,19 +57,19 @@
         </tr>
     </thead>
     <tbody>
-        {% for cuenta in cuentas %}
+        {% for cuenta in cuentas_pasivos %}
         <tr>
-            <td>{{ cuenta_pasivos.codigo_cuenta }}</td>
-            <td>{{ cuenta_pasivos.nombre }}</td>
-            <td>{{ cuenta_pasivos.saldo_deudor|floatformat:2 }}</td>
-            <td>{{ cuenta_pasivos.saldo_acreedor|floatformat:2 }}</td>
+            <td>{{ cuenta.codigo }}</td>
+            <td>{{ cuenta.nombre }}</td>
+            <td>{{ cuenta.saldo_deudor|floatformat:2 }}</td>
+            <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
 <!-- Patrimonio -->
-<h2>Patrimonio ${{patrimonio.saldo}}</h2> 
+<h2>Patrimonio ${{patrimonio_saldo}}</h2> 
 
     <table>
         <thead>
@@ -78,12 +81,12 @@
             </tr>
         </thead>
         <tbody>
-            {% for cuenta in cuentas %}
+            {% for cuenta in cuentas_patrimonio %}
             <tr>
-                <td>{{ cuenta_patrimonio.codigo_cuenta }}</td>
-                <td>{{ cuenta_patrimonio.nombre }}</td>
-                <td>{{ cuenta_patrimonio.saldo_deudor|floatformat:2 }}</td>
-                <td>{{ cuenta_patrimonio.saldo_acreedor|floatformat:2 }}</td>
+                <td>{{ cuenta.codigo}}</td>
+                <td>{{ cuenta.nombre }}</td>
+                <td>{{ cuenta.saldo_deudor|floatformat:2 }}</td>
+                <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -103,23 +106,23 @@
         <tbody>
             <tr>
                 <td>Activos</td>
-                <td>{{ activos.saldo_deudor|floatformat:2 }}</td>
-                <td>{{ activos.saldo_acreedor|floatformat:2 }}</td>
+                <td>{{ activos_debe|floatformat:2 }}</td>
+                <td>{{ activos_haber|floatformat:2 }}</td>
             </tr>
             <tr>
                 <td>Pasivos</td>
-                <td>{{ pasivos.saldo_deudor|floatformat:2 }}</td>
-                <td>{{ pasivos.saldo_acreedor|floatformat:2 }}</td>
+                <td>{{ pasivos_debe|floatformat:2 }}</td>
+                <td>{{ pasivos_haber|floatformat:2 }}</td>
             </tr>
             <tr>
                 <td>Patrimonio</td>
-                <td>{{ patrimonio.saldo_deudor|floatformat:2 }}</td>
-                <td>{{ patrimonio.saldo_acreedor|floatformat:2 }}</td>
+                <td>{{ patrimonio_debe|floatformat:2 }}</td>
+                <td>{{ patrimonio_haber|floatformat:2 }}</td>
             </tr>
             <tr>
                 <td>Total</td>
-                <td>{{ total_debe |floatformat:2 }}</td>
-                <td>{{ total_haber |floatformat:2 }}</td>
+                <td>{{ balance_general_debe |floatformat:2 }}</td>
+                <td>{{ balance_general_haber |floatformat:2 }}</td>
             </tr>
         </tbody>
     </table>

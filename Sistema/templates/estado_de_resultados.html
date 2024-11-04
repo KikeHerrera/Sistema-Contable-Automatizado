@@ -1,6 +1,95 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Estados de Resultados</h1>
+<h1>Estado de Resultados</h1>
+
+<p>Cada estado de resultados se generará luego del cierre contable.</p>
+
+<form method="get" action=".">
+    <label for="estado_resultado">Selecciona un Estado de Resultado:</label>
+    <select name="estado_resultado" id="estado_resultado" onchange="this.form.submit()">
+        <option value="">-- Seleccione --</option>
+        {% for informe in estado_resultado %}
+            <option value="{{ informe.id_estado_resultado }}"
+                {% if informe.id_estado_resultado == request.GET.estado_resultado|default_if_none:'' %}selected{% endif %}
+
+                {{ informe.fecha }}
+            </option>
+        {% endfor %}
+    </select>
+</form>
+
+{% if ingresos %}
+<!-- ACTIVOS -->
+<h2>Ingresos Operativos ${{ingresos.saldo}}</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre de Cuenta</th>
+                <th>Saldo Deudor</th>
+                <th>Saldo Acreedor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cuenta in cuentas_ingresos %}
+            <tr>
+                <td>{{ cuenta.codigo_cuenta }}</td>
+                <td>{{ cuenta.nombre }}</td>
+                <td>{{ cuenta.saldo_deudor|floatformat:2 }}</td>
+                <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<!-- PASIVOS -->
+<h2>Costos de Venta ${{utilidad_bruta}}</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Nombre de Cuenta</th>
+            <th>Saldo Deudor</th>
+            <th>Saldo Acreedor</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cuenta in cuentas_costos %}
+        <tr>
+            <td>{{ cuenta.codigo_cuenta }}</td>
+            <td>{{ cuenta.nombre }}</td>
+            <td>{{ cuenta.saldo_deudor|floatformat:2 }}</td>
+            <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Patrimonio -->
+<h2>Utilidad Bruta ${{utilidad.saldo}}</h2> 
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre Nombre</th>
+                <th>Saldo Deudor</th>
+                <th>Saldo Acreedor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Utilidad Bruta</td>
+                <td>{{ utilidad.saldo_deudor|floatformat:2 }}</td>
+                <td>{{ utilidad.saldo_acreedor|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+{% else %}
+    <p>Por favor seleccione un estado de resultados.</p>
+{% endif %}
 
 {% endblock %}
