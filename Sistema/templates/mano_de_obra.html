@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Cálculo de Mano de Obra</h1>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <label for="empleado">Empleado:</label>
+        <select id="empleado" name="empleado" onchange="this.form.submit()">
+            <option value="">Seleccione un empleado</option>
+            {% for empleado in empleados %}
+                <option value="{{ empleado.id_empleado }}"
+                    {% if empleado_seleccionado and empleado_seleccionado.id_empleado == empleado.id_empleado %}selected{% endif %}>
+                    {{ empleado.nombre }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+    
+    {% if empleado_seleccionado %}
+        <h2>Información del Empleado Seleccionado</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Puesto</th>
+                    <th>Pago Diario</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ empleado_seleccionado.nombre }}</td>
+                    <td>{{ empleado_seleccionado.puesto }}</td>
+                    <td>{{ empleado_seleccionado.pago_diario }}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- Botón que aparece solo si hay un empleado seleccionado -->
+        <form method="POST" action="#">
+            {% csrf_token %}
+            <button type="submit">Calcular Mano de Obra</button>
+        </form>
+    {% else %}
+        <p>No hay empleado seleccionado.</p>
+    {% endif %}
+{% endblock %}
