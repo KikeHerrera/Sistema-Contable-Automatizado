@@ -2,4 +2,31 @@
 
 {% block content %}
 <h1>Libro Mayor</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Fecha de Operación</th>
+            <th>Descripción</th>
+            <th>Cuenta Débito</th>
+            <th>Cuenta Crédito</th>
+            <th>Monto</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transaccion in transacciones %}
+        <tr>
+            <td>{{ transaccion.id_transaccion }}</td>
+            <td>{{ transaccion.fecha_operacion }}</td>
+            <td>{{ transaccion.contenido }}</td>
+            <td>{{ transaccion.asientos.all.0.id_cuenta.nombre }}</td>
+            <td>{{ transaccion.asientos.all.1.id_cuenta.nombre }}</td>
+            <td>{{ transaccion.asientos.all.0.monto_debe|default_if_none:transaccion.asientos.all.1.monto_haber }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
 {% endblock %}
