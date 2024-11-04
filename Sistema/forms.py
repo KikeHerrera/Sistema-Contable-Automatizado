@@ -2,6 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from Sistema.models import Transaccion, Asiento, CuentaContable
 from datetime import date
+from .models import Empleado
 
 
 class TransaccionForm(forms.ModelForm):
@@ -45,3 +46,14 @@ class AsientoCustomForm(forms.Form):
         if monto <= 0:
             raise ValidationError('El monto debe ser mayor a cero.')
         return monto
+    
+
+class EmpleadoForm(forms.ModelForm):
+    class Meta:
+            model = Empleado
+            fields = ['nombre', 'salario_nominal_diario', 'dias_semanales']
+            widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'salario_nominal_diario': forms.NumberInput(attrs={'class': 'form-control'}),
+            'dias_semanales': forms.NumberInput(attrs={'class': 'form-control'}),
+        }

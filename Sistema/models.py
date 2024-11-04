@@ -1,5 +1,6 @@
 from django.db import models
 LIBRO_MAYOR_ACTUAL = 1
+from decimal import Decimal
 
 class LibroMayor(models.Model):
     # Tabla para representar el Libro Mayor
@@ -74,9 +75,26 @@ class Empleado(models.Model):
     incaf = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     costo_real_semanal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
-    def __str__(self):
-        return f"{self.nombre} - {self.puesto}"
+    FACTOR_AGUINALDO = Decimal(25)
+    FACTOR_VACACIONES = Decimal(1.3)
+    DIAS_VACACIONES = Decimal(15)
 
+    def calcular_costos(self):
+        # Cálculos usando Decimal para evitar errores de tipo
+        self.septimo = self.salario_nominal_diario * Decimal(7)
+        self.vacaciones = (self.salario_nominal_diario * self.DIAS_VACACIONES * self.FACTOR_VACACIONES) / Decimal(52)
+        self.aguinaldo = (self.salario_nominal_diario * self.FACTOR_AGUINALDO) / Decimal(52)
+        self.isss = (self.septimo + self.vacaciones) * Decimal(0.075)
+        self.afp = (self.septimo + self.vacaciones) * Decimal(0.0775)
+        self.incaf = (self.septimo + self.vacaciones) * Decimal(0.01)
+        self.costo_real_semanal = (
+            self.septimo + self.vacaciones + self.aguinaldo + self.isss + self.afp + self.incaf
+        )
+
+    def save(self, *args, **kwargs):
+        # Calcular los costos antes de guardar
+        self.calcular_costos()
+        super().save(*args, **kwargs)
 
 # Modelo para Balance General
 class BalanceGeneral(models.Model):

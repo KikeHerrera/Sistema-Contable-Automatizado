@@ -12,6 +12,8 @@ from django.db import IntegrityError
 from .forms import TransaccionForm, CuentaContable, AsientoCustomForm
 from .models import Asiento, Transaccion, PartidaDiaria, CuentaContable, BalanceGeneral, CuentasBalanceGeneral
 from .utils import filtrar_o_crear_partida_diaria
+from .models import Empleado
+from .forms import EmpleadoForm 
 
 def ingresar(request):
     if request.method == "GET":
@@ -175,7 +177,51 @@ def balance_comprobacion(request):
 
 
 def mano_de_obra(request):
-    return render(request, 'mano_de_obra.html')
+    if request.method == 'POST':
+        # Capturar datos del formulario
+        nombre = request.POST.get('nombre')
+        salario_nominal_diario = request.POST.get('salario_nominal_diario')
+        dias_semanales = request.POST.get('dias_semanales')
+
+        # Convertir datos a tipos numéricos adecuados
+        salario_nominal_diario = Decimal(salario_nominal_diario)
+        dias_semanales = int(dias_semanales)
+
+        # Crear un nuevo empleado y guardar en la base de datos
+        nuevo_empleado = Empleado(
+            nombre=nombre,
+            salario_nominal_diario=salario_nominal_diario,
+            dias_semanales=dias_semanales
+        )
+        nuevo_empleado.save()  # Se llama a `calcular_costos` antes de guardar, si está configurado en el modelo
+
+        # Redirigir para evitar reenvío del formulario en la recarga
+        return redirect('mano_de_obra')  # Cambia 'mano_de_obra' por el nombre correcto de la URL
+
+    # Obtener todos los empleados y calcular los totales
+    empleados = Empleado.objects.all()
+    total_salario_nominal_diario = sum(emp.salario_nominal_diario for emp in empleados)
+    total_septimo = sum(emp.septimo for emp in empleados)
+    total_vacaciones = sum(emp.vacaciones for emp in empleados)
+    total_aguinaldo = sum(emp.aguinaldo for emp in empleados)
+    total_isss = sum(emp.isss for emp in empleados)
+    total_afp = sum(emp.afp for emp in empleados)
+    total_incaf = sum(emp.incaf for emp in empleados)
+    total_costo_real_semanal = sum(emp.costo_real_semanal for emp in empleados)
+
+    context = {
+        'empleados': empleados,
+        'total_salario_nominal_diario': total_salario_nominal_diario,
+        'total_septimo': total_septimo,
+        'total_vacaciones': total_vacaciones,
+        'total_aguinaldo': total_aguinaldo,
+        'total_isss': total_isss,
+        'total_afp': total_afp,
+        'total_incaf': total_incaf,
+        'total_costo_real_semanal': total_costo_real_semanal,
+    }
+
+    return render(request, 'mano_de_obra.html', context)
 
 def libro_mayor(request):
     # Obtener todas las partidas diarias disponibles
