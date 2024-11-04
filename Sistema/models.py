@@ -63,17 +63,16 @@ class Asiento(models.Model):
 class Empleado(models.Model):
     id_empleado = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
-    salario = models.DecimalField(max_digits=12, decimal_places=2)
     puesto = models.CharField(max_length=50)
-    horas_semanales = models.IntegerField(default=0)
-    pago_diario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    afp = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    salario_nominal_diario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    dias_semanales = models.IntegerField(default=0)
     septimo = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    incaf = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     vacaciones = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    isss = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     aguinaldo = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    costo_real_mensual = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    isss = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    afp = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    incaf = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    costo_real_semanal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     def __str__(self):
         return f"{self.nombre} - {self.puesto}"
