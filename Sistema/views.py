@@ -59,10 +59,11 @@ def cerrarSesion(request):
     logout(request)
     return redirect("home")
 
-def registrar_transaccion(fecha, contenido, cuenta_deudor, cuenta_acreedor, monto):
+
+def registrar_transaccion(fecha_operacion, contenido, cuenta_deudor, cuenta_acreedor, monto):
     # Crear el objeto Transaccion y asignar valores
     transaccion = Transaccion(
-        fecha=fecha,
+        fecha_operacion=fecha_operacion,
         contenido=contenido,
         total_debe=monto,
         total_haber=monto,
@@ -105,11 +106,11 @@ def transaccion(request):
             cuenta_deudor = formularioAsientoContable.cleaned_data['cuenta_deudor']
             cuenta_acreedor = formularioAsientoContable.cleaned_data['cuenta_acreedor']
             monto = formularioAsientoContable.cleaned_data['monto']
-            fecha = formularioBase.cleaned_data['fecha']
+            fecha_operacion = formularioBase.cleaned_data['fecha_operacion']
             contenido = formularioBase.cleaned_data['contenido']
 
             # Llamar a la función registrar_transaccion para registrar la transacción y los asientos
-            registrar_transaccion(fecha, contenido, cuenta_deudor, cuenta_acreedor, monto)
+            registrar_transaccion(fecha_operacion, contenido, cuenta_deudor, cuenta_acreedor, monto)
 
             return redirect('home')  # Redirige a una página de éxito
         else:
