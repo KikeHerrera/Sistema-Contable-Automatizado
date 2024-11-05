@@ -1,100 +1,119 @@
-.container {
-    background-color: #c9dddd;
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 1000px;
-    margin: 0 auto;
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3), -4px -4px 10px #c9dddd;
+/* styles.css */
+body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: #94bcbb;
 }
 
-body {
-    background-color: #94bcbb;
-    font-family: 'Times New Roman', Times, serif;
+.container {
+    width: 90%;
+    max-width: 1200px;
+    background-color: #c9dddd;
+    padding: 20px;
+    /* Cambia la sombra para un efecto más 3D */
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3),
+        -4px -4px 10px #c9dddd;
+    border-radius: 8px;
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
 
+.table-row {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid black;
+}
+
+.table-row > div {
+    padding: 10px;
+    min-width: 100px;
+    flex: 1;
+}
+
+.table-header {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
 }
 
 h1 {
     text-align: center;
     margin-top: 100px;
     font-family: 'Times New Roman', Times, serif;
+    color: black;
 }
 
-.form-box {
-    text-align: center;
-    margin-bottom: 20px;
-    margin-right: -100px;
-}
-
-.form-box label {
-    font-size: 20px;
-    font-family: 'Times New Roman', Times, serif;
-    justify-content: center;
-}
-
-#partida_diaria {
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid black;
-    cursor: pointer;
-}
-
-.table-box {
-    margin-top: 100px;
-    font-family: 'Times New Roman', Times, serif;
-}
-
-.table {
-    width: 100%;
-    /* Asegura que la tabla ocupe el 100% del ancho del contenedor */
+ table {
+    width: 100%; /* Asegura que la tabla ocupe todo el ancho del contenedor */
     border-collapse: collapse;
-
-}
-
-.table th,
-.table td {
-    border: 1px solid black;
-    padding: 10px;
+    margin-bottom: 20px;
     text-align: center;
-    width: 100%;
-
 }
 
-.table th {
+table th {
     background-color: #007bff;
-    color: #fff;
-    font-weight: bold;
+    color: white;
 }
 
-.table tr:nth-child(even) {
+table th,
+table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid black;
+    word-wrap: break-word; /* Ajuste de palabra para textos largos */
+}
+tbody tr{
     background-color: white;
 }
+tbody tr:nth-child(even) {
+    background-color: white;
+}
+
 .table tr:nth-child(odd) {
-    background-color: white; /* Color para filas impares */
+    background-color: white;
+    /* Color para filas impares */
 }
 
-.table-box::-webkit-scrollbar {
-    width: 10px;
+.totals-container {
+    display: flex;
+    flex-direction: column; /* Cambia la dirección a columna */
+    justify-content: center;
+    align-items: flex-start; /* Alinea los elementos al inicio (izquierda) */
+    margin-top: 10px;
+    font-weight: bold
 }
 
-.table-box::-webkit-scrollbar-thumb {
-    background-color: #888;
-    border-radius: 10px;
+.total-item {
+    font-size: 16px;
+    color: black;
+    margin-bottom: 5px; /* Añade espacio entre "Total Debe" y "Total Haber" */
 }
 
-.table-box::-webkit-scrollbar-thumb:hover {
-    background-color: #555;
+/* Scrollable table body */
+table tbody {
+    display: block;
+    max-height: 400px; /* Ajusta la altura según sea necesario */
+    overflow-y: auto;
+    width: 100%;
 }
 
-/* Estilo base para los enlaces del menú */
-nav a {
-    position: relative;
-    padding: 10px 15px;
-    color: #333;
-    text-decoration: none;
-    overflow: hidden;
-    font-family: 'Times New Roman', Times, serif;
+table thead, table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* Distribuye el ancho uniformemente */
+}
 
+/* Alinear texto de la columna "Saldo Deudor" (columna 3) al centro */
+table td:nth-child(3),
+table th:nth-child(3) {
+    text-align: center;
+}
+
+/* Alinear texto de la columna "Saldo Acredor" (columna 3) al centro */
+table td:nth-child(4),
+table th:nth-child(4) {
+    text-align: center;
 }
 
 /* Pseudo-elemento para el fondo animado */
