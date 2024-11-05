@@ -173,7 +173,7 @@ def balance_comprobacion(request):
     total_haber = Decimal('0.0')
 
     # Sumar al total de debe y haber con las cuentas actualizadas
-    for cuenta in cuentas:
+    # for cuenta in cuentas:
     # Calcular los saldos de cada cuenta y asignar saldado_acreedor o saldado_deudor
     for cuenta in cuentas:
         # Calcular el saldo de la cuenta (Debe - Haber)

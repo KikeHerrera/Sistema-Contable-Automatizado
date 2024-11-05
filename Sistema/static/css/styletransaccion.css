@@ -1,0 +1,137 @@
+/* Centrar el contenedor principal */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    /* Reduce el alto para que el título no quede tan arriba */
+    background-color: #c9dddd;
+    margin: 0;
+    /* Elimina márgenes del contenedor */
+    padding: 0;
+    /* Elimina padding del contenedor */
+
+}
+
+body {
+    background-color: #94bcbb;
+    /* Cambia por el color que prefieras */
+}
+
+
+/* Centrar el título */
+h1 {
+    text-align: center;
+    margin-top: 100px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+/* Estilos de la caja del formulario */
+.form-box {
+    background-color: #c9dddd;
+    padding: 20px;
+    border-radius: 10px;
+    /* Cambia la sombra para un efecto más 3D */
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3),
+        -4px -4px 10px #c9dddd;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Estilos del botón dinámico */
+.save-button {
+    background-color: #5d9b9b;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center; /* Centrar horizontalmente */
+    margin-top: 20px; /* Añade un poco de espacio en la parte superior si es necesario */
+}
+
+.save-button:hover {
+    background-color: blue;
+}
+
+.save-button:active {
+    transform: scale(0.98);
+}
+
+/* Ajustes para el textarea de contenido solo lectura */
+textarea[readonly] {
+    background-color: #e9ecef;
+    /* Color de fondo para distinguir que es de solo lectura */
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Estilo base para los enlaces del menú */
+nav a {
+    position: relative;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    overflow: hidden;
+}
+
+/* Pseudo-elemento para el fondo animado */
+nav a::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #5d9b9b;
+    /* Color del fondo al pasar el puntero */
+    border-radius: 25%;
+    z-index: -1;
+    transition: transform 0.3s ease;
+    transform: scaleX(0);
+    transform-origin: left;
+}
+
+/* Efecto hover para mostrar el fondo */
+nav a:hover::after {
+    transform: scaleX(1);
+}
+
+nav a:hover {
+    color: yellow;
+    /* Cambia el color del texto al pasar el puntero */
+}
+
+/* Ajustar el textarea para que no se mueva ni sea redimensionable */
+textarea {
+    resize: none; /* Evita que el textarea sea redimensionable */
+    width: 100%; /* Asegura que ocupe todo el ancho del contenedor */
+    height: 150px; /* Altura fija */
+    box-sizing: border-box; /* Asegura que el padding no afecte el ancho */
+}
+
+/* Alinear las etiquetas y los campos del formulario */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 14px;
+}

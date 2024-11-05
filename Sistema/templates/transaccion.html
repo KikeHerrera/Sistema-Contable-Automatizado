@@ -1,25 +1,53 @@
 {% extends "base.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="../static/css/styletransaccion.css">
 <h1>Registrar Transacción</h1>
 
-<form method="POST">
-    {% csrf_token %} 
-    
-        {{transaccion_form.as_p}}
-        {{asiento_formset.as_p}}
+<div class="container">
+    <div class="form-box">
+        <form method="POST">
+            {% csrf_token %}
+            
+            <!-- Desglosar campos del formulario -->
+            <div class="form-group">
+                {{ transaccion_form.fecha_operacion.label_tag }} <!-- Campo Fecha -->
+                {{ transaccion_form.fecha_operacion }}
+            </div>
 
+            <div class="form-group">
+                {{ transaccion_form.contenido.label_tag }} <!-- Campo Contenido (textarea) -->
+                {{ transaccion_form.contenido }}
+            </div>
 
-        {% if error %}
-        <p style="color: red;"><strong>{{error}}</strong></p>
-        {% endif %}
-        
-        {% if not readOnly %}
-        <button>    
-            Guardar Transacción
-        </button>
-        {% endif %}
+            <div class="form-group">
+                {{ transaccion_form.cuenta_deudor.label_tag }} <!-- Campo Cuenta Deudor -->
+                {{ transaccion_form.cuenta_deudor }}
+            </div>
 
+            <div class="form-group">
+                {{ transaccion_form.cuenta_acreedor.label_tag }} <!-- Campo Cuenta Acreedor -->
+                {{ transaccion_form.cuenta_acreedor }}
+            </div>
 
-</form> 
+            <div class="form-group">
+                {{ transaccion_form.monto.label_tag }} <!-- Campo Monto -->
+                {{ transaccion_form.monto }}
+            </div>
+
+            <!-- Desglosar formset del asiento si es necesario -->
+            {{ asiento_formset.as_p }}
+            
+            {% if error %}
+            <p style="color: red;"><strong>{{ error }}</strong></p>
+            {% endif %}
+            
+            {% if not readOnly %}
+            <div class="button-container">
+                <button class="save-button">Guardar Transacción</button>
+            </div>            
+            {% endif %}
+        </form> 
+    </div>
+</div>
 {% endblock %}
