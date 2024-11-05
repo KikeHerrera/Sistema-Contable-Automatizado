@@ -14,6 +14,9 @@ from .models import Asiento, CuentasAuxiliaresEstadoDeCapital, CuentasEstadoDeCa
 from .utils import filtrar_o_crear_partida_diaria
 from .models import Empleado
 from .forms import EmpleadoForm 
+from .models import Asiento, Transaccion, PartidaDiaria
+from .utils import filtrar_o_crear_partida_diaria
+from .models import Empleado
 from django.db import transaction
 
 from django.db.models import QuerySet  # Asegurarse de importar QuerySet si aún no está
@@ -32,6 +35,8 @@ def ingresar(request):
             login(request, user)
             return redirect("home")
 
+
+
 def libro_diario(request):
     # Obtener todas las partidas diarias disponibles
     partidas_diarias = PartidaDiaria.objects.all()
@@ -49,6 +54,8 @@ def libro_diario(request):
     # Renderizar la página de inicio con la lista de partidas diarias y transacciones
     return render(request, 'libro_diario.html', {
         'partidas_diarias': partidas_diarias,
+        'transacciones': transacciones.order_by('-fecha_operacion', '-id_transaccion'),
+        'transacciones': transacciones,
         'transacciones': transacciones.order_by('-fecha_operacion', '-id_transaccion') if isinstance(transacciones, QuerySet) else transacciones,
         'partida_seleccionada': partida_seleccionada
     })
@@ -232,6 +239,7 @@ def balance_comprobacion(request):
     })
 
 
+
 def mano_de_obra(request):
     if request.method == 'POST':
         # Capturar datos del formulario
@@ -300,6 +308,24 @@ def handle_not_found(request, exception):
 
 def estados_financieros(request):
     return render(request, 'estados_financieros.html')
+
+def estado_de_capital(request):
+    return render(request, 'estado_de_capital.html')
+    empleados = Empleado.objects.all()  # Obtenemos todos los empleados
+    empleado_seleccionado = None
+
+    if request.method == 'POST':
+        empleado_id = request.POST.get('empleado')
+        if empleado_id:
+            empleado_seleccionado = Empleado.objects.get(id_empleado=empleado_id)
+
+    return render(request, 'mano_de_obra.html', {
+        'empleados': empleados,
+        'empleado_seleccionado': empleado_seleccionado
+    })
+
+
+
 
 
 def saldar_a_cero(cuentas):
@@ -490,6 +516,18 @@ def balance_general(request):
     'balance_general_haber': balance_seleccionado.balance_general_haber if balance_seleccionado else None,
 })
  
+def libro_mayor(request):
+    return render(request, 'libro_mayor.html')
+
+def cierre_contable(request):
+    return render(request, 'cierre_contable.html')
+
+
+
+
+
+def handle_not_found(request, exception):
+    return redirect('home')
 def estado_de_resultados(request):
     # Obtener todos los estados de resultados ordenados por fecha
     estados_de_resultados = EstadoDeResultado.objects.all().order_by('-id_estado_resultado')
