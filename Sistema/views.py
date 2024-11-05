@@ -96,45 +96,6 @@ def registrar_transaccion(fecha_operacion, contenido, cuenta_deudor, cuenta_acre
     return transaccion
 
 
-def registrar_transaccion_cierre(fecha_operacion, contenido, cuenta, ajuste_deudor, ajuste_acreedor):
-    # Crear el objeto Transaccion y asignar valores
-    transaccion = Transaccion(
-        fecha_operacion=fecha_operacion,
-        contenido=contenido,
-        total_debe=ajuste_deudor,
-        total_haber=ajuste_acreedor,
-        id_partida_diaria=filtrar_o_crear_partida_diaria()
-    )
-    transaccion.save()
-    
-    # Actualizar saldos de las cuentas
-    cuenta.saldo_debe += ajuste_deudor
-    cuenta.save()
-    
-    cuenta.saldo_haber += ajuste_acreedor
-    cuenta.save()
-    
-    Asiento.objects.create(
-        id_transaccion=transaccion,
-        id_cuenta=cuenta,
-        monto_debe=ajuste_deudor,
-        monto_haber=ajuste_acreedor,
-    )
-
-    return transaccion
-
-
-def saldar_a_cero(cuentas, mensaje):
-    for cuenta in cuentas:
-        if cuenta.saldado_deudor > cuenta.saldado_acreedor:
-            registrar_transaccion_cierre(date.today(), mensaje, cuenta, cuenta.saldado_deudor, 0)
-            saldar(cuenta)
-        elif cuenta.saldado_deudor < cuenta.saldado_acreedor:
-            registrar_transaccion_cierre(date.today(), mensaje, cuenta, 0, cuenta.saldado_acreedor)
-            saldar(cuenta)
-        else:
-            pass
-
 def transaccion(request):
     if request.method == 'POST':
         formularioBase = TransaccionForm(request.POST)
@@ -313,6 +274,17 @@ def estados_financieros(request):
 
 def estado_de_capital(request):
     return render(request, 'estado_de_capital.html')
+
+
+
+def saldar_a_cero(cuentas):
+    for cuenta in cuentas:
+        cuenta.saldado_deudor = 0
+        cuenta.saldado_acreedor = 0        
+        cuenta.saldo_debe = 0
+        cuenta.saldo_haber = 0
+        cuenta.save()
+        print(f"Cuenta {cuenta.nombre} saldada a cero.")
 
 
 
@@ -569,7 +541,7 @@ def cierre_contable(request):
             # Ejecutar el cierre contable y generar los estados financieros
             generar_balance_general("Antes del Cierre Contable")
             generar_estado_capital()
-            estado_resultados = generar_estado_resultados()
+            generar_estado_resultados()
             request.session['cierre_activado'] = False
         
             cuentas_activos = CuentaContable.objects.filter(categoria='Activos')
@@ -577,11 +549,8 @@ def cierre_contable(request):
             cuentas_patrimonio = CuentaContable.objects.filter(categoria='Patrimonio')
 
             cuentas_a_saldar_a_cero = cuentas_activos.union(cuentas_pasivos, cuentas_patrimonio)
+            saldar_a_cero(cuentas_a_saldar_a_cero)
             
-            # registrar_transaccion(fecha_operacion, contenido, cuenta_deudor, cuenta_acreedor, monto)
-            registrar_transaccion(date.today(),"Cierre Contable", )
-            saldar_a_cero(cuentas_a_saldar_a_cero, f"Cierre Contable {date.today()}")
-
         # Redirigir a la misma página de cierre contable después de confirmar o ejecutar el cierre
         return HttpResponseRedirect(reverse('cierre_contable'))
 
