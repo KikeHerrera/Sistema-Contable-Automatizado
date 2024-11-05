@@ -100,6 +100,7 @@ class Empleado(models.Model):
 class BalanceGeneral(models.Model):
     id_balance_general = models.AutoField(primary_key=True)
     fecha = models.DateField()
+    detalle = models.CharField(max_length=50)
 
     activos_saldo = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     activos_debe = models.DecimalField(max_digits=15, decimal_places=2, default=0)
@@ -117,7 +118,7 @@ class BalanceGeneral(models.Model):
     balance_general_haber = models.DecimalField(max_digits=15, decimal_places=2, default=0)
 
     def __str__(self):
-        return f"Balance General {self.id_balance_general} - Fecha: {self.fecha}"
+        return f"Balance General {self.id_balance_general} {self.detalle} - Fecha: {self.fecha} "
 
 # Modelo para Cuentas del Balance General
 class CuentasBalanceGeneral(models.Model):
@@ -136,22 +137,10 @@ class EstadoDeResultado(models.Model):
     id_estado_resultado = models.AutoField(primary_key=True)
     fecha = models.DateField()
 
-    # Ingresos operativos, con subdivisiones para saldo, debe y haber
-    ingresos_operativos_saldo = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-    ingresos_operativos_debe = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-    ingresos_operativos_haber = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-
-    # Costos de venta, con subdivisiones para saldo, debe y haber
-    costos_venta_saldo = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-    costos_venta_debe = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-    costos_venta_haber = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-
-    utilidad_bruta = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-
     def __str__(self):
         return f"Estado de Resultados {self.id_estado_resultado} - Fecha: {self.fecha}"
+    
 
-# Modelo para Cuentas del Estado de Resultados
 class CuentasEstadoDeResultado(models.Model):
     codigo = models.CharField(max_length=20)
     nombre = models.CharField(max_length=100)
@@ -160,9 +149,21 @@ class CuentasEstadoDeResultado(models.Model):
     saldo_acreedor = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     id_estado_resultado = models.ForeignKey(EstadoDeResultado, on_delete=models.CASCADE, related_name="cuentas")
 
-    def __str__(self):
-        return f"Cuenta {self.codigo} - {self.nombre}"
+# Modelo para Cuentas del Estado de Resultados
+class CuentasAuxiliaresEstadoDeResultado(models.Model):
+    nombre = models.CharField(max_length=100)
+    saldo_debe = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    saldo_haber = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    saldo = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    saldado_acreedor = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    saldado_deudor = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    id_estado_resultado = models.ForeignKey(EstadoDeResultado, on_delete=models.CASCADE, related_name="cuentas_auxiliares")
 
+
+    def __str__(self):
+        return f"Cuenta - {self.nombre}"
+    
+    
 # Modelo para Estado de Capital
 class EstadoDeCapital(models.Model):
     id_estado_capital = models.AutoField(primary_key=True)
@@ -186,3 +187,4 @@ class CuentasEstadoDeCapital(models.Model):
 
     def __str__(self):
         return f"Cuenta {self.codigo} - {self.nombre}"
+

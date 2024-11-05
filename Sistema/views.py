@@ -2,7 +2,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from decimal import Decimal
 from django.db.models import Sum
-from datetime import date, timezone
+from datetime import date, timedelta, timezone
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm , AuthenticationForm
@@ -10,13 +10,17 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from .forms import TransaccionForm, CuentaContable, AsientoCustomForm
-from .models import Asiento, Transaccion, PartidaDiaria, CuentaContable, BalanceGeneral, CuentasBalanceGeneral
+from .models import Asiento, Transaccion, PartidaDiaria, CuentaContable, BalanceGeneral, CuentasBalanceGeneral, EstadoDeResultado, CuentasEstadoDeResultado, CuentasAuxiliaresEstadoDeResultado
 from .utils import filtrar_o_crear_partida_diaria
 from .models import Empleado
 from .forms import EmpleadoForm 
 from .models import Asiento, Transaccion, PartidaDiaria
 from .utils import filtrar_o_crear_partida_diaria
 from .models import Empleado
+from django.db import transaction
+
+from django.db.models import QuerySet  # Asegurarse de importar QuerySet si aún no está
+
 
 def ingresar(request):
     if request.method == "GET":
@@ -43,7 +47,7 @@ def libro_diario(request):
 
     # Si se selecciona una partida diaria específica
     partida_seleccionada = request.GET.get('partida_diaria', partida_diaria_hoy.id_partida_diaria if partida_diaria_hoy else None)
-    transacciones = None
+    transacciones = Transaccion.objects.none()  # Iniciar como queryset vacío
     if partida_seleccionada:
         transacciones = Transaccion.objects.filter(id_partida_diaria=partida_seleccionada)
 
@@ -52,6 +56,7 @@ def libro_diario(request):
         'partidas_diarias': partidas_diarias,
         'transacciones': transacciones.order_by('-fecha_operacion', '-id_transaccion'),
         'transacciones': transacciones,
+        'transacciones': transacciones.order_by('-fecha_operacion', '-id_transaccion') if isinstance(transacciones, QuerySet) else transacciones,
         'partida_seleccionada': partida_seleccionada
     })
 
@@ -62,52 +67,87 @@ def cerrarSesion(request):
     logout(request)
     return redirect("home")
 
+
+def registrar_transaccion(fecha_operacion, contenido, cuenta_deudor, cuenta_acreedor, monto):
+    # Crear el objeto Transaccion y asignar valores
+    transaccion = Transaccion(
+        fecha_operacion=fecha_operacion,
+        contenido=contenido,
+        total_debe=monto,
+        total_haber=monto,
+        id_partida_diaria=filtrar_o_crear_partida_diaria()
+    )
+    transaccion.save()
+    
+    # Actualizar saldos de las cuentas
+    cuenta_deudor.saldo_debe += monto
+    cuenta_deudor.save()
+    
+    cuenta_acreedor.saldo_haber += monto
+    cuenta_acreedor.save()
+    
+    # Crear asientos contables
+    Asiento.objects.create(
+        id_transaccion=transaccion,
+        id_cuenta=cuenta_deudor,
+        monto_debe=monto,
+        monto_haber=0,
+    )
+
+    Asiento.objects.create(
+        id_transaccion=transaccion,
+        id_cuenta=cuenta_acreedor,
+        monto_debe=0,
+        monto_haber=monto,
+    )
+    
+    return transaccion
+
+# en desuso
+def registrar_transaccion_cierre(fecha_operacion, contenido, cuenta, ajuste_deudor, ajuste_acreedor):
+    # Crear el objeto Transaccion y asignar valores
+    transaccion = Transaccion(
+        fecha_operacion=fecha_operacion,
+        contenido=contenido,
+        total_debe=ajuste_deudor,
+        total_haber=ajuste_acreedor,
+        id_partida_diaria=filtrar_o_crear_partida_diaria()
+    )
+    transaccion.save()
+    
+    # Actualizar saldos de las cuentas
+    cuenta.saldo_debe += ajuste_deudor
+    cuenta.save()
+    
+    cuenta.saldo_haber += ajuste_acreedor
+    cuenta.save()
+    
+    Asiento.objects.create(
+        id_transaccion=transaccion,
+        id_cuenta=cuenta,
+        monto_debe=ajuste_deudor,
+        monto_haber=ajuste_acreedor,
+    )
+
+    return transaccion
+
+
 def transaccion(request):
     if request.method == 'POST':
         formularioBase = TransaccionForm(request.POST)
         formularioAsientoContable = AsientoCustomForm(request.POST)
 
         if formularioBase.is_valid() and formularioAsientoContable.is_valid():
-            # Guardar la transacción
-            
-
-            # Crear el asiento a partir de los datos del formulario
+            # Extraer datos del formulario
             cuenta_deudor = formularioAsientoContable.cleaned_data['cuenta_deudor']
             cuenta_acreedor = formularioAsientoContable.cleaned_data['cuenta_acreedor']
             monto = formularioAsientoContable.cleaned_data['monto']
-        
+            fecha_operacion = formularioBase.cleaned_data['fecha_operacion']
+            contenido = formularioBase.cleaned_data['contenido']
 
-            transaccion = formularioBase.save(commit=False)
-            transaccion.total_debe = monto
-            transaccion.total_haber = monto
-            transaccion.id_partida_diaria = filtrar_o_crear_partida_diaria()
+            # Llamar a la función registrar_transaccion para registrar la transacción y los asientos
+            registrar_transaccion(fecha_operacion, contenido, cuenta_deudor, cuenta_acreedor, monto)
 
-            transaccion.save()
-            
-            cuenta_acreedor.saldo_haber += monto
-            cuenta_acreedor.save()
-
-            cuenta_deudor.saldo_debe += monto
-            cuenta_deudor.save()
-
-
-
-            # Crear Asientos (uno para el Debe y otro para el Haber)
-            Asiento.objects.create(
-                id_transaccion=transaccion,
-                id_cuenta=cuenta_deudor,
-                monto_debe=monto,
-                monto_haber=0,
-            )
-
-            Asiento.objects.create(
-                id_transaccion=transaccion,
-                id_cuenta=cuenta_acreedor,
-                monto_debe=0,
-                monto_haber=monto,
-            )
-
-            
             return redirect('home')  # Redirige a una página de éxito
         else:
             # Si hay errores, vuelve a renderizar el formulario con los errores
@@ -129,6 +169,8 @@ def transaccion(request):
     }
 
     return render(request, 'transaccion.html', params)
+
+
 def saldar(cuenta):
     # Calcular el saldo de la cuenta (Debe - Haber)
     saldo = cuenta.saldo_debe - cuenta.saldo_haber
@@ -141,6 +183,22 @@ def saldar(cuenta):
     else:
         cuenta.saldado_deudor = Decimal('0.0')
         cuenta.saldado_acreedor = abs(saldo)
+
+    # Guardar la cuenta con el saldo actualizado
+    cuenta.save()
+
+def saldar_acreedora(cuenta):
+    # Calcular el saldo de la cuenta (Haber - Debe)
+    saldo = cuenta.saldo_haber - cuenta.saldo_debe
+    cuenta.saldo = saldo
+
+    # Asignar el saldo correspondiente
+    if saldo > 0:
+        cuenta.saldado_acreedor = saldo
+        cuenta.saldado_deudor = Decimal('0.0')
+    else:
+        cuenta.saldado_acreedor = Decimal('0.0')
+        cuenta.saldado_deudor = abs(saldo)
 
     # Guardar la cuenta con el saldo actualizado
     cuenta.save()
@@ -264,8 +322,6 @@ def libro_mayor(request):
     })
 
 
-def cierre_contable(request):
-    return render(request, 'cierre_contable.html')
 
 def handle_not_found(request, exception):
     return redirect('home')
@@ -292,8 +348,17 @@ def estado_de_capital(request):
 
 
 
-def estado_de_resultados(request):
-    return render(request, 'estado_de_resultados.html')
+
+def saldar_a_cero(cuentas):
+    for cuenta in cuentas:
+        cuenta.saldado_deudor = 0
+        cuenta.saldado_acreedor = 0        
+        cuenta.saldo_debe = 0
+        cuenta.saldo_haber = 0
+        cuenta.save()
+        print(f"Cuenta {cuenta.nombre} saldada a cero.")
+
+
 
 
 def saldar_cuentas():
@@ -306,7 +371,7 @@ def saldar_cuentas():
 
     print("Todas las cuentas han sido saldadas.")
 
-def generar_balance_general():
+def generar_balance_general(origen="Usuario"):
     # Se llena la fecha
     fecha_actual = date.today()
     
@@ -368,6 +433,7 @@ def generar_balance_general():
     # Crear la instancia de balance general
     balance_general = BalanceGeneral.objects.create(
         fecha=fecha_actual,
+        detalle = origen,
         activos_saldo=activos_saldo,
         activos_debe=activos_debe,
         activos_haber=activos_haber,
@@ -483,3 +549,215 @@ def cierre_contable(request):
 
 def handle_not_found(request, exception):
     return redirect('home')
+def estado_de_resultados(request):
+    # Obtener todos los estados de resultados ordenados por fecha
+    estados_de_resultados = EstadoDeResultado.objects.all().order_by('-id_estado_resultado')
+
+    # Inicialización de variables para evitar errores en el contexto
+    informe_seleccionado = None
+    cuentas_ingresos, cuentas_costos_venta, cuentas_gastos = [], [], []
+    ingresos_totales, costos_venta_totales, gastos_totales = None, None, None
+    utilidad_bruta, utilidad_neta = None, None
+
+    # Verificar si se selecciona un estado específico
+    informe_id = request.GET.get('estado_resultado')
+    if informe_id:
+        try:
+            informe_seleccionado = EstadoDeResultado.objects.get(id_estado_resultado=informe_id)
+            cuentas_ingresos = CuentasEstadoDeResultado.objects.filter(id_estado_resultado=informe_id, codigo__startswith="4.")
+            cuentas_costos_venta = CuentasEstadoDeResultado.objects.filter(id_estado_resultado=informe_id, codigo__startswith="6.")
+            cuentas_gastos = CuentasEstadoDeResultado.objects.filter(id_estado_resultado=informe_id, codigo__startswith="5.")
+            
+            # Obtener Cuentas Auxiliares
+            ingresos_totales = CuentasAuxiliaresEstadoDeResultado.objects.filter(id_estado_resultado=informe_id, nombre="Ingresos Totales").first()
+            costos_venta_totales = CuentasAuxiliaresEstadoDeResultado.objects.filter(id_estado_resultado=informe_id, nombre="Costos de Venta Totales").first()
+            gastos_totales = CuentasAuxiliaresEstadoDeResultado.objects.filter(id_estado_resultado=informe_id, nombre="Gastos Totales").first()
+            utilidad_bruta = CuentasAuxiliaresEstadoDeResultado.objects.filter(id_estado_resultado=informe_id, nombre="Utilidad Bruta").first()
+            utilidad_neta = CuentasAuxiliaresEstadoDeResultado.objects.filter(id_estado_resultado=informe_id, nombre="Utilidad Neta").first()
+
+        except EstadoDeResultado.DoesNotExist:
+            informe_seleccionado = None
+
+    return render(request, 'estado_de_resultados.html', {
+        'estados_de_resultados_seleccionado': informe_seleccionado,
+        'estados_de_resultados': estados_de_resultados,
+        'ingresos_totales': ingresos_totales,
+        'cuentas_ingresos': cuentas_ingresos,
+        'costos_venta_totales': costos_venta_totales,
+        'cuentas_costos_venta': cuentas_costos_venta,
+        'cuentas_gastos': cuentas_gastos,
+        'gastos_totales': gastos_totales,
+        'utilidad_bruta': utilidad_bruta,
+        'utilidad_neta': utilidad_neta,
+    })
+
+
+def calcular_proxima_fecha_cierre():
+    """
+    Calcula la próxima fecha de cierre contable, que será el 1 de junio o el 1 de enero.
+    """
+    fecha_hoy = date.today()
+
+    # Calcular las próximas fechas de cierre (1 de enero y 1 de junio)
+    proximo_cierre_junio = date(fecha_hoy.year, 6, 1)
+    proximo_cierre_enero = date(fecha_hoy.year + 1, 1, 1)
+
+    # Determinar cuál es la próxima fecha de cierre desde hoy
+    if fecha_hoy <= proximo_cierre_junio:
+        return proximo_cierre_junio
+    else:
+        return proximo_cierre_enero
+
+def saldar_a_cero(cuentas, cuenta_saldadora, mensaje):
+    for cuenta in cuentas:
+        if cuenta.saldado_deudor < cuenta.saldado_acreedor:
+            registrar_transaccion(date.today(),mensaje, cuenta, cuenta_saldadora, cuenta.saldado_acreedor)
+            saldar(cuenta)
+            saldar(cuenta_saldadora)
+        elif cuenta.saldado_deudor > cuenta.saldado_acreedor:
+            registrar_transaccion(date.today(), mensaje, cuenta_saldadora, cuenta, cuenta.saldado_deudor)
+            saldar(cuenta)
+            saldar(cuenta_saldadora)
+
+        else:
+            pass
+
+def cierre_contable(request):
+    # Define el estado del cierre contable
+    cierre_activado = request.session.get('cierre_activado', False)
+    fecha_cierre = calcular_proxima_fecha_cierre()
+
+    # Calcular los días restantes para el próximo cierre
+    dias_para_cierre = (fecha_cierre - date.today()).days if not cierre_activado else 0
+
+    if request.method == 'POST':
+        if not cierre_activado:
+            # Confirmar el cierre contable
+            request.session['cierre_activado'] = True
+            cierre_activado = True
+        else:
+            # Ejecutar el cierre contable y generar los estados financieros
+            generar_balance_general("Antes del Cierre Contable")
+            generar_estado_capital()
+            generar_estado_resultados()
+            request.session['cierre_activado'] = False
+        
+            cuentas_ingresos = CuentaContable.objects.filter(categoria='Ingresos')
+            cuentas_costos_venta = CuentaContable.objects.filter(categoria='Costos de Venta')
+            cuentas_gastos = CuentaContable.objects.filter(categoria='Gastos')
+
+            cuentas_a_saldar_a_cero = cuentas_ingresos.union(cuentas_costos_venta, cuentas_gastos)
+            
+            cuenta_resultado_del_ejercicio = CuentaContable.objects.get(codigo_cuenta='3.1.5')
+
+            saldar_a_cero(cuentas_a_saldar_a_cero, cuenta_resultado_del_ejercicio, f"Cierre Contable {date.today()}")
+            
+            generar_balance_general("Después del Cierre Contable")
+        # Redirigir a la misma página de cierre contable después de confirmar o ejecutar el cierre
+        return HttpResponseRedirect(reverse('cierre_contable'))
+
+
+
+    return render(request, 'cierre_contable.html', {
+        'cierre_activado': cierre_activado,
+        'dias_para_cierre': dias_para_cierre,
+    })
+
+def generar_estado_capital():
+    # Lógica para generar el estado de capital
+    pass
+
+
+def generar_estado_resultados():
+    with transaction.atomic():
+        # Crear una nueva instancia de Estado de Resultados
+        estado_resultados = EstadoDeResultado.objects.create(fecha=date.today())
+
+        # Filtrar las cuentas contables por categorías
+        cuentas_ingresos = CuentaContable.objects.filter(codigo_cuenta__startswith="4.")
+        cuentas_costos_venta = CuentaContable.objects.filter(codigo_cuenta__startswith="6.")
+        cuentas_gastos = CuentaContable.objects.filter(codigo_cuenta__startswith="5.")
+
+        # Crear y guardar cuentas relacionadas para ingresos, costos de venta y gastos
+        for cuenta in cuentas_ingresos:
+            CuentasEstadoDeResultado.objects.create(
+                codigo=cuenta.codigo_cuenta,
+                nombre=cuenta.nombre,
+                categoria="Ingresos",
+                saldo_deudor=cuenta.saldado_deudor,
+                saldo_acreedor=cuenta.saldado_acreedor,
+                id_estado_resultado=estado_resultados
+            )
+
+        for cuenta in cuentas_costos_venta:
+            CuentasEstadoDeResultado.objects.create(
+                codigo=cuenta.codigo_cuenta,
+                nombre=cuenta.nombre,
+                categoria="Costos de Venta",
+                saldo_deudor=cuenta.saldado_deudor,
+                saldo_acreedor=cuenta.saldado_acreedor,
+                id_estado_resultado=estado_resultados
+            )
+
+        for cuenta in cuentas_gastos:
+            CuentasEstadoDeResultado.objects.create(
+                codigo=cuenta.codigo_cuenta,
+                nombre=cuenta.nombre,
+                categoria="Gastos",
+                saldo_deudor=cuenta.saldado_deudor,
+                saldo_acreedor=cuenta.saldado_acreedor,
+                id_estado_resultado=estado_resultados
+            )
+
+        # Calcular Ingresos Totales
+        ingresos_totales = CuentasAuxiliaresEstadoDeResultado(
+            nombre="Ingresos Totales",
+            saldo_debe=sum(cuenta.saldado_deudor for cuenta in cuentas_ingresos),
+            saldo_haber=sum(cuenta.saldado_acreedor for cuenta in cuentas_ingresos),
+            id_estado_resultado=estado_resultados
+        )
+        saldar_acreedora(ingresos_totales)
+        ingresos_totales.save()
+
+        # Calcular Costos de Venta Totales
+        costos_venta_totales = CuentasAuxiliaresEstadoDeResultado(
+            nombre="Costos de Venta Totales",
+            saldo_debe=sum(cuenta.saldado_deudor for cuenta in cuentas_costos_venta),
+            saldo_haber=sum(cuenta.saldado_acreedor for cuenta in cuentas_costos_venta),
+            id_estado_resultado=estado_resultados
+        )
+        saldar(costos_venta_totales)
+        costos_venta_totales.save()
+
+        # Calcular Gastos Totales
+        gastos_totales = CuentasAuxiliaresEstadoDeResultado(
+            nombre="Gastos Totales",
+            saldo_debe=sum(cuenta.saldado_deudor for cuenta in cuentas_gastos),
+            saldo_haber=sum(cuenta.saldado_acreedor for cuenta in cuentas_gastos),
+            id_estado_resultado=estado_resultados
+        )
+        saldar(gastos_totales)
+        gastos_totales.save()
+
+        # Calcular Utilidad Bruta (Ingresos Totales - Costos de Venta Totales)
+        utilidad_bruta = CuentasAuxiliaresEstadoDeResultado(
+            nombre="Utilidad Bruta",
+            saldo_debe=ingresos_totales.saldado_deudor + costos_venta_totales.saldado_deudor,
+            saldo_haber=ingresos_totales.saldado_acreedor + costos_venta_totales.saldado_acreedor,
+            id_estado_resultado=estado_resultados
+        )
+        saldar_acreedora(utilidad_bruta)
+        utilidad_bruta.save()
+
+        # Calcular Utilidad Neta (Utilidad Bruta - Gastos Totales)
+        utilidad_neta = CuentasAuxiliaresEstadoDeResultado(
+            nombre="Utilidad Neta",
+            saldo_debe=utilidad_bruta.saldado_deudor + gastos_totales.saldado_deudor,
+            saldo_haber=utilidad_bruta.saldado_acreedor + gastos_totales.saldado_acreedor,
+            id_estado_resultado=estado_resultados
+        )
+        saldar_acreedora(utilidad_neta)
+        utilidad_neta.save()
+      
+        # Retornar la instancia del estado de resultados creado
+        return estado_resultados

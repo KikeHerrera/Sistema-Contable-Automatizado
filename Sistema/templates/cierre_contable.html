@@ -2,4 +2,22 @@
 
 {% block content %}
 <h1>Cierre Contable</h1>
+
+{% if not cierre_activado %} <!-- cierre_activado == False -->
+    <p>Faltan {{ dias_para_cierre }} días para el cierre contable. ¿Desea forzar el cierre contable y generar estados financieros? Esta operación no se puede deshacer.</p>
+    
+    <form method="post" action="{% url 'cierre_contable' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-confirmar">Confirmar</button>
+    </form>
+
+{% else %} <!-- cierre_activado == True -->
+    <p>El proceso de cierre contable ha iniciado, realice los ajustes necesarios antes de ejecutarlo.</p>
+    
+    <form method="post" action="{% url 'cierre_contable' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-continuar">Continuar</button>
+    </form>
+
+{% endif %}
 {% endblock %}
