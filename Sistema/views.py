@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from .forms import TransaccionForm, CuentaContable, AsientoCustomForm
-from .models import Asiento, Transaccion, PartidaDiaria, CuentaContable, BalanceGeneral, CuentasBalanceGeneral, EstadoDeResultado, CuentasEstadoDeResultado, CuentasAuxiliaresEstadoDeResultado
+from .models import Asiento, CuentasAuxiliaresEstadoDeCapital, CuentasEstadoDeCapital, Transaccion, PartidaDiaria, CuentaContable, BalanceGeneral, CuentasBalanceGeneral, EstadoDeResultado, CuentasEstadoDeResultado, CuentasAuxiliaresEstadoDeResultado, EstadoDeCapital
 from .utils import filtrar_o_crear_partida_diaria
 from .models import Empleado
 from .forms import EmpleadoForm 
@@ -40,7 +40,7 @@ def ingresar(request):
 
 def libro_diario(request):
     # Obtener todas las partidas diarias disponibles
-    partidas_diarias = PartidaDiaria.objects.all()
+    partidas_diarias = PartidaDiaria.objects.all().order_by('-id_partida_diaria')
 
     # Obtener la partida diaria de hoy por defecto
     hoy = date.today()
@@ -55,6 +55,7 @@ def libro_diario(request):
     # Renderizar la página de inicio con la lista de partidas diarias y transacciones
     return render(request, 'libro_diario.html', {
         'partidas_diarias': partidas_diarias,
+        "partida_seleccionada": partida_seleccionada,
         'transacciones': transacciones.order_by('-fecha_operacion', '-id_transaccion'),
         'transacciones': transacciones,
         'transacciones': transacciones.order_by('-fecha_operacion', '-id_transaccion') if isinstance(transacciones, QuerySet) else transacciones,
@@ -132,24 +133,37 @@ def registrar_transaccion_cierre(fecha_operacion, contenido, cuenta, ajuste_deud
 
     return transaccion
 
-
 def transaccion(request):
     if request.method == 'POST':
         formularioBase = TransaccionForm(request.POST)
         formularioAsientoContable = AsientoCustomForm(request.POST)
 
         if formularioBase.is_valid() and formularioAsientoContable.is_valid():
-            # Extraer datos del formulario
+            # Extraer datos del formulario base y asiento contable
             cuenta_deudor = formularioAsientoContable.cleaned_data['cuenta_deudor']
             cuenta_acreedor = formularioAsientoContable.cleaned_data['cuenta_acreedor']
             monto = formularioAsientoContable.cleaned_data['monto']
             fecha_operacion = formularioBase.cleaned_data['fecha_operacion']
             contenido = formularioBase.cleaned_data['contenido']
+            cargar_iva = formularioAsientoContable.cleaned_data['cargar_iva']
 
-            # Llamar a la función registrar_transaccion para registrar la transacción y los asientos
-            registrar_transaccion(fecha_operacion, contenido, cuenta_deudor, cuenta_acreedor, monto)
+            # Registrar la transacción principal
+            transaccion_principal = registrar_transaccion(fecha_operacion, contenido, cuenta_deudor, cuenta_acreedor, monto)
 
-            return redirect('home')  # Redirige a una página de éxito
+            # Automatizar la creación de transacción adicional si se aplica IVA
+            if cargar_iva:
+                iva_monto = monto * Decimal('0.13')  # Calcular el monto del IVA (13%)
+                if cargar_iva.codigo_cuenta == '1.1.6':  # Crédito Fiscal
+                    contenido_iva = f"IVA 13% Crédito Fiscal de: {contenido}"
+                    cuenta_iva = cargar_iva  # La cuenta que se usará es Crédito Fiscal
+                    registrar_transaccion(fecha_operacion, contenido_iva, cuenta_iva, cuenta_acreedor, iva_monto)
+                elif cargar_iva.codigo_cuenta == '2.1.3':  # Débito Fiscal
+                    contenido_iva = f"IVA 13% Débito Fiscal de: {contenido}"
+                    cuenta_iva = cargar_iva  # La cuenta que se usará es Débito Fiscal
+                    registrar_transaccion(fecha_operacion, contenido_iva, cuenta_deudor, cuenta_iva, iva_monto)
+
+            return redirect('libro_diario')  # Redirige a una página de éxito
+
         else:
             # Si hay errores, vuelve a renderizar el formulario con los errores
             params = {
@@ -159,6 +173,7 @@ def transaccion(request):
                 "error": "Hubo un error. Revisa los campos del formulario."
             }
             return render(request, 'transaccion.html', params)
+
     else:
         formularioBase = TransaccionForm()
         formularioAsientoContable = AsientoCustomForm()
@@ -170,7 +185,6 @@ def transaccion(request):
     }
 
     return render(request, 'transaccion.html', params)
-
 
 def saldar(cuenta):
     # Calcular el saldo de la cuenta (Debe - Haber)
@@ -220,10 +234,6 @@ def balance_comprobacion(request):
     # Salda todas las cuentas antes de mostrar el balance de comprobación
     saldar_cuentas()
 
-
-
-
-def balance_comprobacion(request):
     # Obtener todas las cuentas contables
     cuentas = CuentaContable.objects.all()
 
@@ -251,6 +261,7 @@ def balance_comprobacion(request):
         cuenta.save()
 
         # Sumar al total de debe y haber
+    for cuenta in cuentas:
         total_debe += cuenta.saldo_debe
         total_haber += cuenta.saldo_haber
 
@@ -260,6 +271,7 @@ def balance_comprobacion(request):
         'total_debe': total_debe,
         'total_haber': total_haber
     })
+
 
 
 def mano_de_obra(request):
@@ -309,20 +321,15 @@ def mano_de_obra(request):
 
     return render(request, 'mano_de_obra.html', context)
 
-def libro_mayor(request):
-    # Obtener todas las partidas diarias disponibles
-    partidas_diarias = PartidaDiaria.objects.all()
 
+def libro_mayor(request):
     # Obtener todas las transacciones ordenadas por fecha, de más recientes a más antiguas
     transacciones = Transaccion.objects.all().order_by('-fecha_operacion', '-id_transaccion')
 
     # Renderizar la página de inicio con la lista de partidas diarias y transacciones
     return render(request, 'libro_mayor.html', {
-        'partidas_diarias': partidas_diarias,
         'transacciones': transacciones,
     })
-
-
 
 def handle_not_found(request, exception):
     return redirect('home')
@@ -347,9 +354,6 @@ def estado_de_capital(request):
     })
 
 
-
-
-
 def saldar_a_cero(cuentas):
     for cuenta in cuentas:
         cuenta.saldado_deudor = 0
@@ -359,18 +363,6 @@ def saldar_a_cero(cuentas):
         cuenta.save()
         print(f"Cuenta {cuenta.nombre} saldada a cero.")
 
-
-
-
-def saldar_cuentas():
-    # Obtener todas las cuentas contables
-    cuentas = CuentaContable.objects.all()
-
-    # Iterar sobre cada cuenta y saldarla
-    for cuenta in cuentas:
-        saldar(cuenta)
-
-    print("Todas las cuentas han sido saldadas.")
 
 def generar_balance_general(origen="Usuario"):
     # Se llena la fecha
@@ -558,6 +550,7 @@ def catalogo_de_cuenta(request):
 
 def handle_not_found(request, exception):
     return redirect('home')
+
 def estado_de_resultados(request):
     # Obtener todos los estados de resultados ordenados por fecha
     estados_de_resultados = EstadoDeResultado.objects.all().order_by('-id_estado_resultado')
@@ -672,10 +665,6 @@ def cierre_contable(request):
         'dias_para_cierre': dias_para_cierre,
     })
 
-def generar_estado_capital():
-    # Lógica para generar el estado de capital
-    pass
-
 
 def generar_estado_resultados():
     with transaction.atomic():
@@ -772,4 +761,69 @@ def generar_estado_resultados():
         return estado_resultados
     
 
+
+
+def generar_estado_capital():
+    with transaction.atomic():
+        # Se llena la fecha
+        estado_de_capital = EstadoDeCapital.objects.create(fecha=date.today())
+
+        # Filtrar todas las cuentas de patrimonio desde CuentaContable
+        cuentas_patrimonio = CuentaContable.objects.filter(categoria='Patrimonio')
+
+        # Calcular patrimonio_debe, patrimonio_haber y patrimonio_saldo
+        patrimonio_debe = sum([cuenta.saldado_deudor for cuenta in cuentas_patrimonio])
+        patrimonio_haber = sum([cuenta.saldado_acreedor for cuenta in cuentas_patrimonio])
+
+
+        patrimonio = CuentasAuxiliaresEstadoDeCapital.objects.create(
+            nombre = "Patrimonio Final",
+            saldo_debe = patrimonio_debe,
+            saldo_haber = patrimonio_haber,
+            id_estado_capital = estado_de_capital
+        )   
+
+        saldar_acreedora(patrimonio)
+
+        for cuenta in cuentas_patrimonio:
+            cuenta_patrimonio = CuentasEstadoDeCapital.objects.create(
+                codigo = cuenta.codigo_cuenta,
+                nombre = cuenta.nombre,
+                categoria = cuenta.categoria,
+                saldo_deudor = cuenta.saldado_deudor,
+                saldo_acreedor = cuenta.saldado_acreedor,
+                id_estado_capital = estado_de_capital
+            )
+            print(f"Cuenta Patrimonio guardada: {cuenta_patrimonio}")
+
+        return estado_de_capital
+    
+def estado_de_capital(request):
+    # Obtener todos los estados de capital por id
+    estados_de_capital = EstadoDeCapital.objects.all().order_by('-id_estado_capital')
+    
+    # Inicialización de variables para evitar errores en el contexto
+    informe_seleccionado = None
+    cuentas_patrimonio = []
+    patrimonio_final = None
+
+    # Verificar si se selecciona un estado específico
+    informe_id = request.GET.get('estado_capital')
+    if informe_id:
+        try:
+            informe_seleccionado = EstadoDeCapital.objects.get(id_estado_capital=informe_id)
+            cuentas_patrimonio = CuentasEstadoDeCapital.objects.filter(id_estado_capital=informe_seleccionado)
+            
+            # Obtener Cuenta Auxiliar
+            patrimonio_final = CuentasAuxiliaresEstadoDeCapital.objects.filter(id_estado_capital=informe_seleccionado).first()
+
+        except EstadoDeCapital.DoesNotExist:
+            informe_seleccionado = None
+
+    return render(request, 'estado_de_capital.html', {
+        'estado_capital_seleccionado': informe_seleccionado,
+        'estados_capital': estados_de_capital,
+        'patrimonio_final': patrimonio_final,
+        'cuentas_patrimonio': cuentas_patrimonio,
+    })
 

@@ -12,7 +12,7 @@
         {% for informe in estados_de_resultados %}
         <option value="{{ informe.id_estado_resultado }}"
                 {% if informe.id_estado_resultado == request.GET.estado_resultado|default_if_none:'' %}selected{% endif %}>
-            {{ informe.fecha }}
+            {{ informe }}
         </option>
     {% endfor %}
     

@@ -40,6 +40,14 @@ class AsientoCustomForm(forms.Form):
         widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0.01'}),
         label="Monto"
     )
+    
+    cargar_iva = forms.ModelChoiceField(
+        queryset=CuentaContable.objects.filter(codigo_cuenta__in=['1.1.6', '2.1.3']),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Cargar IVA 13%",
+        empty_label="No Aplica",
+        required=False 
+    )
 
     def clean_monto(self):
         monto = self.cleaned_data.get('monto')
