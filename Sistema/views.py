@@ -555,11 +555,11 @@ def calcular_proxima_fecha_cierre():
 def saldar_a_cero(cuentas, cuenta_saldadora, mensaje):
     for cuenta in cuentas:
         if cuenta.saldado_deudor < cuenta.saldado_acreedor:
-            registrar_transaccion(date.today(),mensaje, cuenta, cuenta_saldadora, cuenta.saldado_deudor)
+            registrar_transaccion(date.today(),mensaje, cuenta, cuenta_saldadora, cuenta.saldado_acreedor)
             saldar(cuenta)
             saldar(cuenta_saldadora)
         elif cuenta.saldado_deudor > cuenta.saldado_acreedor:
-            registrar_transaccion(date.today(), mensaje, cuenta_saldadora, cuenta, cuenta.saldado_acreedor)
+            registrar_transaccion(date.today(), mensaje, cuenta_saldadora, cuenta, cuenta.saldado_deudor)
             saldar(cuenta)
             saldar(cuenta_saldadora)
 
@@ -596,6 +596,7 @@ def cierre_contable(request):
 
             saldar_a_cero(cuentas_a_saldar_a_cero, cuenta_resultado_del_ejercicio, f"Cierre Contable {date.today()}")
             
+            generar_balance_general("Después del Cierre Contable")
         # Redirigir a la misma página de cierre contable después de confirmar o ejecutar el cierre
         return HttpResponseRedirect(reverse('cierre_contable'))
 
