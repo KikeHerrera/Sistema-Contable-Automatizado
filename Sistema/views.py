@@ -539,14 +539,22 @@ def cierre_contable(request):
             cierre_activado = True
         else:
             # Ejecutar el cierre contable y generar los estados financieros
-            print("sexo")
             generar_balance_general("Antes del Cierre Contable")
             generar_estado_capital()
             generar_estado_resultados()
             request.session['cierre_activado'] = False
         
+            cuentas_activos = CuentaContable.objects.filter(categoria='Activos')
+            cuentas_pasivos = CuentaContable.objects.filter(categoria='Pasivos')
+            cuentas_patrimonio = CuentaContable.objects.filter(categoria='Patrimonio')
+
+            cuentas_a_saldar_a_cero = cuentas_activos.union(cuentas_pasivos, cuentas_patrimonio)
+            saldar_a_cero(cuentas_a_saldar_a_cero)
+            
         # Redirigir a la misma página de cierre contable después de confirmar o ejecutar el cierre
         return HttpResponseRedirect(reverse('cierre_contable'))
+
+
 
     return render(request, 'cierre_contable.html', {
         'cierre_activado': cierre_activado,
@@ -559,10 +567,6 @@ def generar_estado_capital():
 
 
 def generar_estado_resultados():
-    """
-    Genera un nuevo Estado de Resultados y guarda los datos en la base de datos.
-    Retorna la instancia del Estado de Resultados generado.
-    """
     with transaction.atomic():
         # Crear una nueva instancia de Estado de Resultados
         estado_resultados = EstadoDeResultado.objects.create(fecha=date.today())
