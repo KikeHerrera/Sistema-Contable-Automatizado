@@ -1,0 +1,120 @@
+.container {
+    background-color: #c9dddd;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 1000px;
+    margin: 0 auto;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3), -4px -4px 10px #c9dddd;
+}
+
+body {
+    background-color: #94bcbb;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 100px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.form-box {
+    text-align: center;
+    margin-bottom: 20px;
+    margin-right: -100px;
+}
+
+.form-box label {
+    font-size: 20px;
+    font-family: 'Times New Roman', Times, serif;
+    justify-content: center;
+}
+
+#partida_diaria {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.table-box {
+    margin-top: 100px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.table {
+    width: 100%;
+    /* Asegura que la tabla ocupe el 100% del ancho del contenedor */
+    border-collapse: collapse;
+
+}
+
+.table th,
+.table td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+
+}
+
+.table th {
+    background-color: rgba(0, 0, 255, 0.339);
+    
+}
+
+.table tr:nth-child(even) {
+    background-color: white;
+}
+.table tr:nth-child(odd) {
+    background-color: white; /* Color para filas impares */
+}
+
+.table-box::-webkit-scrollbar {
+    width: 10px;
+}
+
+.table-box::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+}
+
+.table-box::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+/* Estilo base para los enlaces del menú */
+nav a {
+    position: relative;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    overflow: hidden;
+}
+
+/* Pseudo-elemento para el fondo animado */
+nav a::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #5d9b9b;
+    /* Color del fondo al pasar el puntero */
+    border-radius: 25%;
+    z-index: -1;
+    transition: transform 0.3s ease;
+    transform: scaleX(0);
+    transform-origin: left;
+}
+
+/* Efecto hover para mostrar el fondo */
+nav a:hover::after {
+    transform: scaleX(1);
+}
+
+nav a:hover {
+    color: yellow;
+    /* Cambia el color del texto al pasar el puntero */
+}
