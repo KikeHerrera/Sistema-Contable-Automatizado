@@ -118,17 +118,13 @@ body {
 .table-container td {
     padding: 12px;
     text-align: center;
-    border: 1px solid #ddd;
+    border: 1px solid black;
 }
 
 .table-container th {
     background-color: #007bff;
     color: #fff;
     font-weight: bold;
-}
-
-.table-container tr:nth-child(even) {
-    background-color: #f2f2f2;
 }
 
 /* Totales */

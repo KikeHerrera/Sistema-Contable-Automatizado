@@ -5,32 +5,35 @@
 <h1>Balance de Comprobación</h1>
 
 <div class="container">
-    <table>
-        <thead>
-            <tr>
-                <th>Código</th>
-                <th>Nombre de Cuenta</th>
-                <th>Saldo Deudor</th>
-                <th>Saldo Acreedor</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for cuenta in cuentas %}
-            <tr>
-                <td>{{ cuenta.codigo_cuenta }}</td>
-                <td>{{ cuenta.nombre }}</td>
-                <td>{{ cuenta.saldado_deudor|floatformat:2 }}</td>
-                <td>{{ cuenta.saldado_acreedor|floatformat:2 }}</td>
-            </tr>
-            {% endfor %}
-            <tr>
-                <td></td>
-                <td><strong>Total</strong></td>
-                <td><strong>{{ total_debe|floatformat:2 }}</strong></td>
-                <td><strong>{{ total_haber|floatformat:2 }}</strong></td>
-            </tr>
-        </tbody>
-    </table>
+    
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre de Cuenta</th>
+                    <th>Saldo Deudor</th>
+                    <th>Saldo Acreedor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cuenta in cuentas %}
+                <tr>
+                    <td>{{ cuenta.codigo_cuenta }}</td>
+                    <td>{{ cuenta.nombre }}</td>
+                    <td>{{ cuenta.saldado_deudor|floatformat:2 }}</td>
+                    <td>{{ cuenta.saldado_acreedor|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td></td>
+                    <td><strong>Total</strong></td>
+                    <td><strong>{{ total_debe|floatformat:2 }}</strong></td>
+                    <td><strong>{{ total_haber|floatformat:2 }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    
+
     <div class="totals-container">
         <div class="total-item">
             <strong>Total Debe:</strong>
