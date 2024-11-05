@@ -54,6 +54,7 @@ def libro_diario(request):
     # Renderizar la página de inicio con la lista de partidas diarias y transacciones
     return render(request, 'libro_diario.html', {
         'partidas_diarias': partidas_diarias,
+        "partida_seleccionada": partida_seleccionada,
         'transacciones': transacciones.order_by('-fecha_operacion', '-id_transaccion'),
         'transacciones': transacciones,
         'transacciones': transacciones.order_by('-fecha_operacion', '-id_transaccion') if isinstance(transacciones, QuerySet) else transacciones,
@@ -131,24 +132,37 @@ def registrar_transaccion_cierre(fecha_operacion, contenido, cuenta, ajuste_deud
 
     return transaccion
 
-
 def transaccion(request):
     if request.method == 'POST':
         formularioBase = TransaccionForm(request.POST)
         formularioAsientoContable = AsientoCustomForm(request.POST)
 
         if formularioBase.is_valid() and formularioAsientoContable.is_valid():
-            # Extraer datos del formulario
+            # Extraer datos del formulario base y asiento contable
             cuenta_deudor = formularioAsientoContable.cleaned_data['cuenta_deudor']
             cuenta_acreedor = formularioAsientoContable.cleaned_data['cuenta_acreedor']
             monto = formularioAsientoContable.cleaned_data['monto']
             fecha_operacion = formularioBase.cleaned_data['fecha_operacion']
             contenido = formularioBase.cleaned_data['contenido']
+            cargar_iva = formularioAsientoContable.cleaned_data['cargar_iva']
 
-            # Llamar a la función registrar_transaccion para registrar la transacción y los asientos
-            registrar_transaccion(fecha_operacion, contenido, cuenta_deudor, cuenta_acreedor, monto)
+            # Registrar la transacción principal
+            transaccion_principal = registrar_transaccion(fecha_operacion, contenido, cuenta_deudor, cuenta_acreedor, monto)
 
-            return redirect('home')  # Redirige a una página de éxito
+            # Automatizar la creación de transacción adicional si se aplica IVA
+            if cargar_iva:
+                iva_monto = monto * Decimal('0.13')  # Calcular el monto del IVA (13%)
+                if cargar_iva.codigo_cuenta == '1.1.6':  # Crédito Fiscal
+                    contenido_iva = f"IVA 13% Crédito Fiscal de: {contenido}"
+                    cuenta_iva = cargar_iva  # La cuenta que se usará es Crédito Fiscal
+                    registrar_transaccion(fecha_operacion, contenido_iva, cuenta_iva, cuenta_acreedor, iva_monto)
+                elif cargar_iva.codigo_cuenta == '2.1.3':  # Débito Fiscal
+                    contenido_iva = f"IVA 13% Débito Fiscal de: {contenido}"
+                    cuenta_iva = cargar_iva  # La cuenta que se usará es Débito Fiscal
+                    registrar_transaccion(fecha_operacion, contenido_iva, cuenta_deudor, cuenta_iva, iva_monto)
+
+            return redirect('libro_diario')  # Redirige a una página de éxito
+
         else:
             # Si hay errores, vuelve a renderizar el formulario con los errores
             params = {
@@ -158,6 +172,7 @@ def transaccion(request):
                 "error": "Hubo un error. Revisa los campos del formulario."
             }
             return render(request, 'transaccion.html', params)
+
     else:
         formularioBase = TransaccionForm()
         formularioAsientoContable = AsientoCustomForm()
@@ -169,7 +184,6 @@ def transaccion(request):
     }
 
     return render(request, 'transaccion.html', params)
-
 
 def saldar(cuenta):
     # Calcular el saldo de la cuenta (Debe - Haber)
