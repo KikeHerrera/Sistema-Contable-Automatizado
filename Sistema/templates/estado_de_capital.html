@@ -1,28 +1,32 @@
 {% extends "base.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="../static/css/StyleBalanceGeneral.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <h1>Estado de Capital</h1>
 
-<p>Cada estado de capital se generará luego del cierre contable.</p>
+<div class="container">
 
-<form method="get" action=".">
-    <label for="estado_capital">Selecciona un Estado de Capital:</label>
-    <select name="estado_capital" id="estado_capital" onchange="this.form.submit()">
-        <option value="">-- Seleccione --</option>
-        {% for informe in estados_capital %}
-            <option value="{{ informe.id_estado_capital }}"
+    <p>Cada estado de capital se generará luego del cierre contable.</p>
+
+    <form method="get" action=".">
+        <label for="estado_capital">Selecciona un Estado de Capital:</label>
+        <select name="estado_capital" id="estado_capital" onchange="this.form.submit()">
+            <option value="">-- Seleccione --</option>
+            {% for informe in estados_capital %}
+            <option value="{{ informe.id_estado_capital }}" 
                 {% if informe.id_estado_capital == request.GET.estado_capital|default_if_none:'' %}selected{% endif %}>
                 {{ informe }}
             </option>
-        {% endfor %}
-    </select>
-</form>
+            {% endfor %}
+        </select>
+    </form>
 
-{% if patrimonio_final %}
-<h1>{{ estado_capital_seleccionado }}</h1>
+    {% if patrimonio_final %}
+    <h1>{{ estado_capital_seleccionado }}</h1>
 
     <!-- Patrimonio -->
-    <h2>Patrimonio Final ${{ patrimonio_final.saldo }}</h2> 
+    <h2>Patrimonio Final ${{ patrimonio_final.saldo }}</h2>
 
     <table>
         <thead>
@@ -51,8 +55,10 @@
         </tbody>
     </table>
 
-{% else %}
+    {% else %}
     <p>Por favor seleccione un estado de capital.</p>
-{% endif %}
+    {% endif %}
+    <a class="back-button" href="{% url 'estados_financieros' %}">Volver</a>
 
+</div>
 {% endblock %}

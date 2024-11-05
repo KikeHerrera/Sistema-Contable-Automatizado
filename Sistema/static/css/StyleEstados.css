@@ -1,0 +1,144 @@
+body {
+    background-color: #94bcbb;
+    /* Cambia por el color que prefieras */
+    font-family: 'Times New Roman', Times, serif;
+
+}
+
+/* Centrar el contenedor */
+.container {
+    display: flex;
+    justify-content: column;
+    align-items: center;
+    gap: 20px; /* Espacio entre botones */
+    margin-top: 20px;
+
+}
+
+.container1 {
+    display: flex;
+    justify-content: column;
+    align-items: center;
+    gap: 20px; /* Espacio entre botones */
+    margin-top: -20px;
+
+}
+
+.container2 {
+    display: flex;
+    justify-content: column;
+    align-items: center;
+    gap: 20px; /* Espacio entre botones */
+    margin-top: 20px;
+
+}
+
+.container,
+.container1,
+.container2 {
+    gap: 10px; /* Cambiar a un valor menor para reducir el espacio entre los botones dentro de cada contenedor */
+}
+
+/* Centrar el título */
+h1 {
+    text-align: center;
+    margin-top: 100px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+/* Estilos para los botones */
+.button {
+    display: inline-block;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    width: 200px; /* Ancho fijo para los botones */
+    text-align: center;
+}
+
+/* Animación alrededor del botón al pasar el mouse */
+.button::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    transition: transform 0.3s ease;
+    transform: rotate(45deg);
+    pointer-events: none;
+    opacity: 0;
+}
+
+.button:hover::before {
+    transform: rotate(90deg);
+    opacity: 1;
+}
+
+.button:hover {
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.6);
+    color: #007bff;
+    background-color: #fff;
+}
+
+/* Animación con JavaScript para mejorar el efecto */
+.button:hover {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(0, 123, 255, 0.6);
+    }
+}
+
+/* Estilo base para los enlaces del menú */
+nav a {
+    position: relative;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    overflow: hidden;
+    font-family: 'Times New Roman', Times, serif;
+
+}
+
+/* Pseudo-elemento para el fondo animado */
+nav a::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #5d9b9b;
+    /* Color del fondo al pasar el puntero */
+    border-radius: 25%;
+    z-index: -1;
+    transition: transform 0.3s ease;
+    transform: scaleX(0);
+    transform-origin: left;
+}
+
+/* Efecto hover para mostrar el fondo */
+nav a:hover::after {
+    transform: scaleX(1);
+}
+
+nav a:hover {
+    color: yellow;
+    /* Cambia el color del texto al pasar el puntero */
+}
+
+

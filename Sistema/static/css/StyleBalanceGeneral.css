@@ -1,0 +1,169 @@
+/* styles.css */
+body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: #94bcbb;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    background-color: #c9dddd;
+    padding: 20px;
+    /* Cambia la sombra para un efecto más 3D */
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3),
+        -4px -4px 10px #c9dddd;
+    border-radius: 8px;
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex-direction: column;
+}
+
+.table-row {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid black;
+}
+
+.table-row > div {
+    padding: 10px;
+    min-width: 100px;
+    flex: 1;
+}
+
+.table-header {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 100px;
+    font-family: 'Times New Roman', Times, serif;
+    color: black;
+}
+
+ table {
+    width: 100%; /* Asegura que la tabla ocupe todo el ancho del contenedor */
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+table thead tr {
+    background-color: #007bff;
+    color: white;
+}
+
+table th,
+table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid black;
+    word-wrap: break-word; /* Ajuste de palabra para textos largos */
+}
+tbody tr{
+    background-color: white;
+}
+tbody tr:nth-child(even) {
+    background-color: white;
+}
+
+.table tr:nth-child(odd) {
+    background-color: white;
+    /* Color para filas impares */
+}
+
+.totals-container {
+    display: flex;
+    flex-direction: column; /* Cambia la dirección a columna */
+    justify-content: center;
+    align-items: flex-start; /* Alinea los elementos al inicio (izquierda) */
+    margin-top: 10px;
+    font-weight: bold
+}
+
+.total-item {
+    font-size: 16px;
+    color: black;
+    margin-bottom: 5px; /* Añade espacio entre "Total Debe" y "Total Haber" */
+}
+
+/* Scrollable table body */
+table tbody {
+    display: block;
+    max-height: 400px; /* Ajusta la altura según sea necesario */
+    overflow-y: auto;
+    width: 100%;
+}
+
+table thead, table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* Distribuye el ancho uniformemente */
+}
+
+/* Alinear texto de la columna "Saldo Deudor" (columna 3) al centro */
+table td:nth-child(3),
+table th:nth-child(3) {
+    text-align: center;
+}
+
+/* Alinear texto de la columna "Saldo Acredor" (columna 3) al centro */
+table td:nth-child(4),
+table th:nth-child(4) {
+    text-align: center;
+}
+
+/* Pseudo-elemento para el fondo animado */
+nav a::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #5d9b9b;
+    /* Color del fondo al pasar el puntero */
+    border-radius: 25%;
+    z-index: -1;
+    transition: transform 0.3s ease;
+    transform: scaleX(0);
+    transform-origin: left;
+}
+
+/* Efecto hover para mostrar el fondo */
+nav a:hover::after {
+    transform: scaleX(1);
+}
+
+nav a:hover {
+    color: yellow;
+    /* Cambia el color del texto al pasar el puntero */
+}
+
+.back-button {
+    display: inline-block;
+    padding: 5px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.3s ease;
+    border: none;
+    border-radius: 4px;
+    background-color: #5d9b9b;
+    max-width: fit-content; /* Ajusta el ancho máximo del botón */
+
+}
+
+.back-button:hover {
+    background-color: blue;
+}
+
+.first-paragraph {
+    order: -1;
+}

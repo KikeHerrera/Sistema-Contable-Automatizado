@@ -1,28 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="../static/css/StyleBalanceGeneral.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <h1>Estado de Resultados</h1>
 
-<p>Cada estado de resultados se generará luego del cierre contable.</p>
+<div class="container">
+    <p class="first-paragraph">Cada estado de resultados se generará luego del cierre contable.</p>
 
-<form method="get" action=".">
-    <label for="estado_resultado">Selecciona un Estado de Resultado:</label>
-    <select name="estado_resultado" id="estado_resultado" onchange="this.form.submit()">
-        <option value="">-- Seleccione --</option>
-        {% for informe in estados_de_resultados %}
-        <option value="{{ informe.id_estado_resultado }}"
+    <form method="get" action=".">
+        <label for="estado_resultado">Selecciona un Estado de Resultado:</label>
+        <select name="estado_resultado" id="estado_resultado" onchange="this.form.submit()">
+            <option value="">-- Seleccione --</option>
+            {% for informe in estados_de_resultados %}
+            <option value="{{ informe.id_estado_resultado }}" 
                 {% if informe.id_estado_resultado == request.GET.estado_resultado|default_if_none:'' %}selected{% endif %}>
-            {{ informe }}
-        </option>
-    {% endfor %}
-    
-    </select>
-</form>
+                {{ informe }}
+            </option>
+            {% endfor %}
 
-{% if estados_de_resultados_seleccionado %}
-<h1>{{ estados_de_resultados_seleccionado }}</h1>
-<!-- ACTIVOS -->
-<h2>Ingresos Totales ${{ingresos_totales.saldo}}</h2>
+        </select>
+    </form>
+
+    {% if estados_de_resultados_seleccionado %}
+    <h1>{{ estados_de_resultados_seleccionado }}</h1>
+    <!-- ACTIVOS -->
+    <h2>Ingresos Totales ${{ingresos_totales.saldo}}</h2>
 
     <table>
         <thead>
@@ -51,128 +54,130 @@
         </tbody>
     </table>
 
-<!-- COSTO DE VENTAS -->
-<h2>Costos de Venta ${{costos_venta_totales.saldo}}</h2>
+    <!-- COSTO DE VENTAS -->
+    <h2>Costos de Venta ${{costos_venta_totales.saldo}}</h2>
 
-<table>
-    <thead>
-        <tr>
-            <th>Código</th>
-            <th>Nombre de Cuenta</th>
-            <th>Saldo Deudor</th>
-            <th>Saldo Acreedor</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for cuenta in cuentas_costos_venta %}
-        <tr>
-            <td>{{ cuenta.codigo }}</td>
-            <td>{{ cuenta.nombre }}</td>
-            <td>{{ cuenta.saldo_deudor|floatformat:2 }}</td>
-            <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
-        </tr>
-        {% endfor %}
-        <tr>
-            <td></td>
-            <td><strong>{{ costos_venta_totales.nombre }}</strong></td>
-            <td><strong>{{ costos_venta_totales.saldado_deudor|floatformat:2 }}</strong></td>
-            <td><strong>{{ costos_venta_totales.saldado_acreedor|floatformat:2 }}</strong></td>
-        </tr>
-    </tbody>
-</table>
+    <table>
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre de Cuenta</th>
+                <th>Saldo Deudor</th>
+                <th>Saldo Acreedor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cuenta in cuentas_costos_venta %}
+            <tr>
+                <td>{{ cuenta.codigo }}</td>
+                <td>{{ cuenta.nombre }}</td>
+                <td>{{ cuenta.saldo_deudor|floatformat:2 }}</td>
+                <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td></td>
+                <td><strong>{{ costos_venta_totales.nombre }}</strong></td>
+                <td><strong>{{ costos_venta_totales.saldado_deudor|floatformat:2 }}</strong></td>
+                <td><strong>{{ costos_venta_totales.saldado_acreedor|floatformat:2 }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
 
-<!-- Gastos Totales -->
- <h2>Gastos Totales ${{gastos_totales.saldo}}</h2>
+    <!-- Gastos Totales -->
+    <h2>Gastos Totales ${{gastos_totales.saldo}}</h2>
 
-<table>
-    <thead>
-        <tr>
-            <th>Código</th>
-            <th>Nombre de Cuenta</th>
-            <th>Saldo Deudor</th>
-            <th>Saldo Acreedor</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for cuenta in cuentas_gastos %}
-        <tr>
-            <td>{{ cuenta.codigo }}</td>
-            <td>{{ cuenta.nombre }}</td>
-            <td>{{ cuenta.saldo_deudor|floatformat:2 }}</td>
-            <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
-        </tr>
-        {% endfor %}
-        <tr>
-            <td></td>
-            <td><strong>{{ gastos_totales.nombre }}</strong></td>
-            <td><strong>{{ gastos_totales.saldado_deudor|floatformat:2 }}</strong></td>
-            <td><strong>{{ gastos_totales.saldado_acreedor|floatformat:2 }}</strong></td>
-        </tr>
-    </tbody>
-</table>
-<!-- Utilidad Bruta -->
-<h2>Utilidad Bruta ${{utilidad_bruta.saldo}}</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre de Cuenta</th>
+                <th>Saldo Deudor</th>
+                <th>Saldo Acreedor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cuenta in cuentas_gastos %}
+            <tr>
+                <td>{{ cuenta.codigo }}</td>
+                <td>{{ cuenta.nombre }}</td>
+                <td>{{ cuenta.saldo_deudor|floatformat:2 }}</td>
+                <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td></td>
+                <td><strong>{{ gastos_totales.nombre }}</strong></td>
+                <td><strong>{{ gastos_totales.saldado_deudor|floatformat:2 }}</strong></td>
+                <td><strong>{{ gastos_totales.saldado_acreedor|floatformat:2 }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- Utilidad Bruta -->
+    <h2>Utilidad Bruta ${{utilidad_bruta.saldo}}</h2>
 
-<table>
-    <thead>
-        <tr>
-            <th>Nombre de Cuenta</th>
-            <th>Saldo Deudor</th>
-            <th>Saldo Acreedor</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>{{ ingresos_totales.nombre }}</td>
-            <td>{{ ingresos_totales.saldado_deudor|floatformat:2 }}</td>
-            <td>{{ ingresos_totales.saldado_acreedor|floatformat:2 }}</td>
-        </tr>
-        <tr>
-            <td>{{ costos_venta_totales.nombre }}</td>
-            <td>{{ costos_venta_totales.saldado_deudor|floatformat:2 }}</td>
-            <td>{{ costos_venta_totales.saldado_acreedor|floatformat:2 }}</td>
-        </tr>
-        <tr>
-            <td><strong>{{ utilidad_bruta.nombre }}</strong></td>
-            <td><strong>{{ utilidad_bruta.saldado_deudor|floatformat:2 }}</strong></td>
-            <td><strong>{{ utilidad_bruta.saldado_acreedor|floatformat:2 }}</strong></td>
-        </tr>
-        
-    </tbody>
-</table>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre de Cuenta</th>
+                <th>Saldo Deudor</th>
+                <th>Saldo Acreedor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ ingresos_totales.nombre }}</td>
+                <td>{{ ingresos_totales.saldado_deudor|floatformat:2 }}</td>
+                <td>{{ ingresos_totales.saldado_acreedor|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>{{ costos_venta_totales.nombre }}</td>
+                <td>{{ costos_venta_totales.saldado_deudor|floatformat:2 }}</td>
+                <td>{{ costos_venta_totales.saldado_acreedor|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td><strong>{{ utilidad_bruta.nombre }}</strong></td>
+                <td><strong>{{ utilidad_bruta.saldado_deudor|floatformat:2 }}</strong></td>
+                <td><strong>{{ utilidad_bruta.saldado_acreedor|floatformat:2 }}</strong></td>
+            </tr>
 
-<h2>Utilidad Neta ${{utilidad_neta.saldo}}</h2>
+        </tbody>
+    </table>
 
-<table>
-    <thead>
-        <tr>
-            <th>Nombre de Cuenta</th>
-            <th>Saldo Deudor</th>
-            <th>Saldo Acreedor</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>{{ utilidad_bruta.nombre }}</td>
-            <td>{{ utilidad_bruta.saldado_deudor|floatformat:2 }}</td>
-            <td>{{ utilidad_bruta.saldado_acreedor|floatformat:2 }}</td>
-        </tr>
-        <tr>
-            <td>{{ gastos_totales.nombre }}</td>
-            <td>{{ gastos_totales.saldado_deudor|floatformat:2 }}</td>
-            <td>{{ gastos_totales.saldado_acreedor|floatformat:2 }}</td>
-            
-        </tr>
-        <tr>
-            <td><strong>{{ utilidad_neta.nombre }}</strong></td>
-            <td><strong>{{ utilidad_neta.saldado_deudor|floatformat:2 }}</strong></td>
-            <td><strong>{{ utilidad_neta.saldado_acreedor|floatformat:2 }}</strong></td>            
-        </tr>
-    </tbody>
-</table>
+    <h2>Utilidad Neta ${{utilidad_neta.saldo}}</h2>
 
-{% else %}
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre de Cuenta</th>
+                <th>Saldo Deudor</th>
+                <th>Saldo Acreedor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ utilidad_bruta.nombre }}</td>
+                <td>{{ utilidad_bruta.saldado_deudor|floatformat:2 }}</td>
+                <td>{{ utilidad_bruta.saldado_acreedor|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>{{ gastos_totales.nombre }}</td>
+                <td>{{ gastos_totales.saldado_deudor|floatformat:2 }}</td>
+                <td>{{ gastos_totales.saldado_acreedor|floatformat:2 }}</td>
+
+            </tr>
+            <tr>
+                <td><strong>{{ utilidad_neta.nombre }}</strong></td>
+                <td><strong>{{ utilidad_neta.saldado_deudor|floatformat:2 }}</strong></td>
+                <td><strong>{{ utilidad_neta.saldado_acreedor|floatformat:2 }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% else %}
     <p>Por favor seleccione un estado de resultados.</p>
-{% endif %}
+    {% endif %}
+    <a class="back-button" href="{% url 'estados_financieros' %}">Volver</a>
+</div>
 
 {% endblock %}
