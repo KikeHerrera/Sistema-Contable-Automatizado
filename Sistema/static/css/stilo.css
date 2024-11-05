@@ -7,11 +7,15 @@ body {
     align-items: center;
     background-color: #f0f0f0;
 }
- body nav#mySidebar{ align-self: flex-start;margin-top: 40px;}
+
+ body nav#mySidebar{
+     align-self: flex-start;margin-top: 40px;
+}
+
 nav {
     width: 100%;
-    background-color: #fff;
-    border-bottom: 1px solid #ccc;
+    background-color: #c9dddd;
+    border-bottom: 1px solid #c9dddd;
     padding: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -20,10 +24,13 @@ nav {
 }
 
 nav a {
-    text-decoration: none;
+    position: relative;
+    padding: 10px 15px;
     color: #333;
-    margin: 0 10px;
+    text-decoration: none;
+    transition: color 0.3s;
 }
+
 
 .container {
     display: grid;

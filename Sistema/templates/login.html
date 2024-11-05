@@ -12,20 +12,28 @@
         <h2>INICIAR SESIÓN</h2>
         <form method="POST">
             {% csrf_token %}
-            {{form.as_p}}
-            <button> Login </button>
+            
             <div class="input-container">
-                <img src="../static/assets/user.png" alt="User Icon" class="user-icon">
-                <!--<input type="text" id="username" placeholder="USERNAME" required name="username">-->
+                <label for="{{ form.username.id_for_label }}" class="label-username">Usuario</label>
+                <div class="field-wrapper">
+                    {{ form.username }}
+                    <img src="../static/assets/user.png" alt="User Icon" class="user-icon">
+                </div>
             </div>
+            
             <div class="input-container">
-                <img src="../static/assets/lock.png" alt="Lock Icon" class="lock-icon">
-                <!--<input type="password" id="password" placeholder="*********" required name="password">-->
-                <span class="toggle-password">
-                    <img src="../static/assets/eye.png" alt="Show Password" id="togglePassword" class="eye-icon">
-                </span>
+                <label for="{{ form.password.id_for_label }}" class="label-password">Contraseña</label>
+                <div class="field-wrapper">
+                    {{ form.password }}
+                    <img src="../static/assets/lock.png" alt="Lock Icon" class="lock-icon">
+                    <span class="toggle-password">
+                        <img src="../static/assets/eye.png" alt="Show Password" id="togglePassword" class="eye-icon">
+                    </span>
+                </div>
             </div>
-            <!--<button type="submit" class="login-button">LOGIN</button>-->
+
+            <button type="submit" class="login-button">Login</button>
+
             {% if error %}
             <div class="error-container" id="error-container">
                 <p style="color: red;"><strong>{{ error }}</strong></p>
@@ -34,4 +42,6 @@
         </form>
     </div>
 </div>
+
+<script src= "../static/js/Login.js"></script>
 {% endblock %}

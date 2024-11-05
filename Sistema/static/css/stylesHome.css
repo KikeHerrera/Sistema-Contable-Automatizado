@@ -1,0 +1,80 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #94bcbb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+}
+
+header {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    background-color: #cfcfc4;
+    border-bottom: 1px solid #ccc;
+    position: fixed;
+    top: 0;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    margin-top: 60px; /* Ajuste para evitar que el contenido quede bajo el nav */
+    text-align: center;
+}
+h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    font-family: 'Times New Roman', Times, serif;
+}
+.main-image {
+    width: 300px;
+    height: 300px;
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+    display: block;
+}
+
+/* Estilo base para los enlaces del menú */
+nav a {
+    position: relative;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    overflow: hidden;
+}
+
+/* Pseudo-elemento para el fondo animado */
+nav a::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #5d9b9b; /* Color del fondo al pasar el puntero */
+    border-radius: 25%;
+    z-index: -1;
+    transition: transform 0.3s ease;
+    transform: scaleX(0);
+    transform-origin: left;
+}
+
+/* Efecto hover para mostrar el fondo */
+nav a:hover::after {
+    transform: scaleX(1);
+}
+
+nav a:hover {
+    color: yellow; /* Cambia el color del texto al pasar el puntero */
+}

@@ -1,5 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Te damos la bienvenida, <strong>{{username}}</strong>.</h1>
-{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Innovators</title>
+    <link rel="stylesheet" href="../static/css/stylesHome.css">
+</head>
+
+<main>
+    <h1>TECH INNOVATORS</h1>
+    <img src="../static/assets/LogoTech.jpeg" alt="Tech Innovators" class="main-image">
+    <h1>Te damos la bienvenida, <strong>{{username}}</strong>.</h1>
+</main>
+
+{% endblock %}  

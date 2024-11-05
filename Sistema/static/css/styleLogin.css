@@ -86,10 +86,11 @@ input[type="text"]:focus, input[type="password"]:focus {
 .user-icon, .lock-icon {
     position: absolute;
     left: 10px;
-    top: 50%;
+    top: 65%;
     transform: translateY(-50%);
     width: 20px; /* Tamaño pequeño */
     height: 20px;
+    pointer-events: none; /* Asegura que el icono no interfiera con el clic en el campo */
 }
 /* Ajustes para los inputs */
 input[type="text"], input[type="password"] {
@@ -98,6 +99,7 @@ input[type="text"], input[type="password"] {
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    box-sizing: border-box; /* Asegura que el padding se incluya en el ancho total */
 }
 input[type="text"]:focus, input[type="password"]:focus {
     outline: none;
@@ -107,7 +109,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 .toggle-password {
     position: absolute;
     right: 10px;
-    top: 50%;
+    top: 65%;
     transform: translateY(-50%);
     cursor: pointer;
 }
