@@ -1,17 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="../static/css/styleBalanceC.css">
 <h1>Balance de Comprobación</h1>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balance de Comprobación</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
 
+<div class="container">
     <table>
         <thead>
             <tr>
@@ -38,18 +31,15 @@
             </tr>
         </tbody>
     </table>
-<div class="totals-container">
-    <div class="total-item">
-        <strong>Total Debe:</strong>
-        <span>{{ total_debe|floatformat:2 }}</span>
-    </div>
-    <div class="total-item">
-        <strong>Total Haber:</strong>
-        <span>{{ total_haber|floatformat:2 }}</span>
+    <div class="totals-container">
+        <div class="total-item">
+            <strong>Total Debe:</strong>
+            <span>{{ total_debe|floatformat:2 }}</span>
+        </div>
+        <div class="total-item">
+            <strong>Total Haber:</strong>
+            <span>{{ total_haber|floatformat:2 }}</span>
+        </div>
     </div>
 </div>
-</body>
-</html>
-
-
 {% endblock %}
