@@ -39,7 +39,7 @@ def ingresar(request):
 
 def libro_diario(request):
     # Obtener todas las partidas diarias disponibles
-    partidas_diarias = PartidaDiaria.objects.all()
+    partidas_diarias = PartidaDiaria.objects.all().order_by('-id_partida_diaria')
 
     # Obtener la partida diaria de hoy por defecto
     hoy = date.today()
@@ -287,20 +287,15 @@ def mano_de_obra(request):
 
     return render(request, 'mano_de_obra.html', context)
 
-def libro_mayor(request):
-    # Obtener todas las partidas diarias disponibles
-    partidas_diarias = PartidaDiaria.objects.all()
 
+def libro_mayor(request):
     # Obtener todas las transacciones ordenadas por fecha, de más recientes a más antiguas
     transacciones = Transaccion.objects.all().order_by('-fecha_operacion', '-id_transaccion')
 
     # Renderizar la página de inicio con la lista de partidas diarias y transacciones
     return render(request, 'libro_mayor.html', {
-        'partidas_diarias': partidas_diarias,
         'transacciones': transacciones,
     })
-
-
 
 def handle_not_found(request, exception):
     return redirect('home')
@@ -325,9 +320,6 @@ def estado_de_capital(request):
     })
 
 
-
-
-
 def saldar_a_cero(cuentas):
     for cuenta in cuentas:
         cuenta.saldado_deudor = 0
@@ -337,18 +329,6 @@ def saldar_a_cero(cuentas):
         cuenta.save()
         print(f"Cuenta {cuenta.nombre} saldada a cero.")
 
-
-
-
-def saldar_cuentas():
-    # Obtener todas las cuentas contables
-    cuentas = CuentaContable.objects.all()
-
-    # Iterar sobre cada cuenta y saldarla
-    for cuenta in cuentas:
-        saldar(cuenta)
-
-    print("Todas las cuentas han sido saldadas.")
 
 def generar_balance_general(origen="Usuario"):
     # Se llena la fecha
@@ -515,19 +495,11 @@ def balance_general(request):
     'balance_general_debe': balance_seleccionado.balance_general_debe if balance_seleccionado else None,
     'balance_general_haber': balance_seleccionado.balance_general_haber if balance_seleccionado else None,
 })
- 
-def libro_mayor(request):
-    return render(request, 'libro_mayor.html')
-
-def cierre_contable(request):
-    return render(request, 'cierre_contable.html')
-
-
-
 
 
 def handle_not_found(request, exception):
     return redirect('home')
+
 def estado_de_resultados(request):
     # Obtener todos los estados de resultados ordenados por fecha
     estados_de_resultados = EstadoDeResultado.objects.all().order_by('-id_estado_resultado')

@@ -17,9 +17,10 @@
         {% endfor %}
     </select>
 </form>
-<h1>{{ estado_capital_seleccionado }}</h1>
 
 {% if patrimonio_final %}
+<h1>{{ estado_capital_seleccionado }}</h1>
+
     <!-- Patrimonio -->
     <h2>Patrimonio Final ${{ patrimonio_final.saldo }}</h2> 
 

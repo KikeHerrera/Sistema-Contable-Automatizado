@@ -10,7 +10,7 @@
             {% for partida in partidas_diarias %}
                 <option value="{{ partida.id_partida_diaria }}"
                     {% if partida.id_partida_diaria == request.GET.partida_diaria %}selected{% endif %}>
-                    {{ partida.fecha }}
+                    {{ partida }}
                 </option>
             {% endfor %}
         </select>
