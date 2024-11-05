@@ -169,10 +169,6 @@ class EstadoDeCapital(models.Model):
     id_estado_capital = models.AutoField(primary_key=True)
     fecha = models.DateField()
 
-    patrimonio_final_saldo = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-    patrimonio_final_debe = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-    patrimonio_final_haber = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-
     def __str__(self):
         return f"Estado de Capital {self.id_estado_capital} - Fecha: {self.fecha}"
 
@@ -188,3 +184,16 @@ class CuentasEstadoDeCapital(models.Model):
     def __str__(self):
         return f"Cuenta {self.codigo} - {self.nombre}"
 
+
+class CuentasAuxiliaresEstadoDeCapital(models.Model):
+    nombre = models.CharField(max_length=100)
+    saldo_debe = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    saldo_haber = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    saldo = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    saldado_acreedor = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    saldado_deudor = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    id_estado_capital = models.ForeignKey(EstadoDeCapital, on_delete=models.CASCADE, related_name="cuentas_auxiliares")
+
+
+    def __str__(self):
+        return f"Cuenta - {self.nombre}"

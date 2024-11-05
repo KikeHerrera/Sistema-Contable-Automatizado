@@ -9,20 +9,19 @@
     <label for="estado_capital">Selecciona un Estado de Capital:</label>
     <select name="estado_capital" id="estado_capital" onchange="this.form.submit()">
         <option value="">-- Seleccione --</option>
-        {% for informe in estado_capital %}
+        {% for informe in estados_capital %}
             <option value="{{ informe.id_estado_capital }}"
-
-                {% if informe.id_estado_capital == request.GET.estado_de_capital|default_if_none:'' %}selected{% endif %}
-
-                {{ informe.fecha }}
+                {% if informe.id_estado_capital == request.GET.estado_capital|default_if_none:'' %}selected{% endif %}>
+                {{ informe }}
             </option>
         {% endfor %}
     </select>
 </form>
+<h1>{{ estado_capital_seleccionado }}</h1>
 
-{% if patrimonio %}
-<!-- ACTIVOS -->
-<h2>Patrimonio Final ${{patrimonio.saldo}}</h2> 
+{% if patrimonio_final %}
+    <!-- Patrimonio -->
+    <h2>Patrimonio Final ${{ patrimonio_final.saldo }}</h2> 
 
     <table>
         <thead>
@@ -36,12 +35,18 @@
         <tbody>
             {% for cuenta in cuentas_patrimonio %}
             <tr>
-                <td>{{ cuenta.codigo_cuenta }}</td>
+                <td>{{ cuenta.codigo }}</td>
                 <td>{{ cuenta.nombre }}</td>
                 <td>{{ cuenta.saldo_deudor|floatformat:2 }}</td>
                 <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
             </tr>
             {% endfor %}
+            <tr>
+                <td></td>
+                <td><strong>{{ patrimonio_final.nombre }}</strong></td>
+                <td><strong>{{ patrimonio_final.saldado_deudor|floatformat:2 }}</strong></td>
+                <td><strong>{{ patrimonio_final.saldado_acreedor|floatformat:2 }}</strong></td>
+            </tr>
         </tbody>
     </table>
 

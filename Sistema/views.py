@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from .forms import TransaccionForm, CuentaContable, AsientoCustomForm
-from .models import Asiento, Transaccion, PartidaDiaria, CuentaContable, BalanceGeneral, CuentasBalanceGeneral, EstadoDeResultado, CuentasEstadoDeResultado, CuentasAuxiliaresEstadoDeResultado
+from .models import Asiento, CuentasAuxiliaresEstadoDeCapital, CuentasEstadoDeCapital, Transaccion, PartidaDiaria, CuentaContable, BalanceGeneral, CuentasBalanceGeneral, EstadoDeResultado, CuentasEstadoDeResultado, CuentasAuxiliaresEstadoDeResultado, EstadoDeCapital
 from .utils import filtrar_o_crear_partida_diaria
 from .models import Empleado
 from .forms import EmpleadoForm 
@@ -300,10 +300,6 @@ def handle_not_found(request, exception):
 
 def estados_financieros(request):
     return render(request, 'estados_financieros.html')
-
-def estado_de_capital(request):
-    return render(request, 'estado_de_capital.html')
-
 
 
 def saldar_a_cero(cuentas):
@@ -608,10 +604,6 @@ def cierre_contable(request):
         'dias_para_cierre': dias_para_cierre,
     })
 
-def generar_estado_capital():
-    # Lógica para generar el estado de capital
-    pass
-
 
 def generar_estado_resultados():
     with transaction.atomic():
@@ -706,3 +698,69 @@ def generar_estado_resultados():
       
         # Retornar la instancia del estado de resultados creado
         return estado_resultados
+
+
+def generar_estado_capital():
+    with transaction.atomic():
+        # Se llena la fecha
+        estado_de_capital = EstadoDeCapital.objects.create(fecha=date.today())
+
+        # Filtrar todas las cuentas de patrimonio desde CuentaContable
+        cuentas_patrimonio = CuentaContable.objects.filter(categoria='Patrimonio')
+
+        # Calcular patrimonio_debe, patrimonio_haber y patrimonio_saldo
+        patrimonio_debe = sum([cuenta.saldado_deudor for cuenta in cuentas_patrimonio])
+        patrimonio_haber = sum([cuenta.saldado_acreedor for cuenta in cuentas_patrimonio])
+
+
+        patrimonio = CuentasAuxiliaresEstadoDeCapital.objects.create(
+            nombre = "Patrimonio Final",
+            saldo_debe = patrimonio_debe,
+            saldo_haber = patrimonio_haber,
+            id_estado_capital = estado_de_capital
+        )   
+
+        saldar_acreedora(patrimonio)
+
+        for cuenta in cuentas_patrimonio:
+            cuenta_patrimonio = CuentasEstadoDeCapital.objects.create(
+                codigo = cuenta.codigo_cuenta,
+                nombre = cuenta.nombre,
+                categoria = cuenta.categoria,
+                saldo_deudor = cuenta.saldado_deudor,
+                saldo_acreedor = cuenta.saldado_acreedor,
+                id_estado_capital = estado_de_capital
+            )
+            print(f"Cuenta Patrimonio guardada: {cuenta_patrimonio}")
+
+        return estado_de_capital
+    
+def estado_de_capital(request):
+    # Obtener todos los estados de capital por id
+    estados_de_capital = EstadoDeCapital.objects.all().order_by('-id_estado_capital')
+    
+    # Inicialización de variables para evitar errores en el contexto
+    informe_seleccionado = None
+    cuentas_patrimonio = []
+    patrimonio_final = None
+
+    # Verificar si se selecciona un estado específico
+    informe_id = request.GET.get('estado_capital')
+    if informe_id:
+        try:
+            informe_seleccionado = EstadoDeCapital.objects.get(id_estado_capital=informe_id)
+            cuentas_patrimonio = CuentasEstadoDeCapital.objects.filter(id_estado_capital=informe_seleccionado)
+            
+            # Obtener Cuenta Auxiliar
+            patrimonio_final = CuentasAuxiliaresEstadoDeCapital.objects.filter(id_estado_capital=informe_seleccionado).first()
+
+        except EstadoDeCapital.DoesNotExist:
+            informe_seleccionado = None
+
+    return render(request, 'estado_de_capital.html', {
+        'estado_capital_seleccionado': informe_seleccionado,
+        'estados_capital': estados_de_capital,
+        'patrimonio_final': patrimonio_final,
+        'cuentas_patrimonio': cuentas_patrimonio,
+    })
+
