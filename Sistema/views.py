@@ -95,6 +95,34 @@ def registrar_transaccion(fecha_operacion, contenido, cuenta_deudor, cuenta_acre
     
     return transaccion
 
+# en desuso
+def registrar_transaccion_cierre(fecha_operacion, contenido, cuenta, ajuste_deudor, ajuste_acreedor):
+    # Crear el objeto Transaccion y asignar valores
+    transaccion = Transaccion(
+        fecha_operacion=fecha_operacion,
+        contenido=contenido,
+        total_debe=ajuste_deudor,
+        total_haber=ajuste_acreedor,
+        id_partida_diaria=filtrar_o_crear_partida_diaria()
+    )
+    transaccion.save()
+    
+    # Actualizar saldos de las cuentas
+    cuenta.saldo_debe += ajuste_deudor
+    cuenta.save()
+    
+    cuenta.saldo_haber += ajuste_acreedor
+    cuenta.save()
+    
+    Asiento.objects.create(
+        id_transaccion=transaccion,
+        id_cuenta=cuenta,
+        monto_debe=ajuste_deudor,
+        monto_haber=ajuste_acreedor,
+    )
+
+    return transaccion
+
 
 def transaccion(request):
     if request.method == 'POST':
@@ -524,6 +552,20 @@ def calcular_proxima_fecha_cierre():
     else:
         return proximo_cierre_enero
 
+def saldar_a_cero(cuentas, cuenta_saldadora, mensaje):
+    for cuenta in cuentas:
+        if cuenta.saldado_deudor < cuenta.saldado_acreedor:
+            registrar_transaccion(date.today(),mensaje, cuenta, cuenta_saldadora, cuenta.saldado_deudor)
+            saldar(cuenta)
+            saldar(cuenta_saldadora)
+        elif cuenta.saldado_deudor > cuenta.saldado_acreedor:
+            registrar_transaccion(date.today(), mensaje, cuenta_saldadora, cuenta, cuenta.saldado_acreedor)
+            saldar(cuenta)
+            saldar(cuenta_saldadora)
+
+        else:
+            pass
+
 def cierre_contable(request):
     # Define el estado del cierre contable
     cierre_activado = request.session.get('cierre_activado', False)
@@ -544,12 +586,15 @@ def cierre_contable(request):
             generar_estado_resultados()
             request.session['cierre_activado'] = False
         
-            cuentas_activos = CuentaContable.objects.filter(categoria='Activos')
-            cuentas_pasivos = CuentaContable.objects.filter(categoria='Pasivos')
-            cuentas_patrimonio = CuentaContable.objects.filter(categoria='Patrimonio')
+            cuentas_ingresos = CuentaContable.objects.filter(categoria='Ingresos')
+            cuentas_costos_venta = CuentaContable.objects.filter(categoria='Costos de Venta')
+            cuentas_gastos = CuentaContable.objects.filter(categoria='Gastos')
 
-            cuentas_a_saldar_a_cero = cuentas_activos.union(cuentas_pasivos, cuentas_patrimonio)
-            saldar_a_cero(cuentas_a_saldar_a_cero)
+            cuentas_a_saldar_a_cero = cuentas_ingresos.union(cuentas_costos_venta, cuentas_gastos)
+            
+            cuenta_resultado_del_ejercicio = CuentaContable.objects.get(codigo_cuenta='3.1.5')
+
+            saldar_a_cero(cuentas_a_saldar_a_cero, cuenta_resultado_del_ejercicio, f"Cierre Contable {date.today()}")
             
         # Redirigir a la misma página de cierre contable después de confirmar o ejecutar el cierre
         return HttpResponseRedirect(reverse('cierre_contable'))
