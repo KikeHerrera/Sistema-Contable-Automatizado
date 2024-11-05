@@ -16,6 +16,8 @@
 body {
     background-color: #94bcbb;
     /* Cambia por el color que prefieras */
+    font-family: 'Times New Roman', Times, serif;
+
 }
 
 
@@ -79,6 +81,8 @@ nav a {
     color: #333;
     text-decoration: none;
     overflow: hidden;
+    font-family: 'Times New Roman', Times, serif;
+
 }
 
 /* Pseudo-elemento para el fondo animado */

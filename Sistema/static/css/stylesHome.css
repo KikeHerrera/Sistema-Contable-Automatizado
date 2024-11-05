@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Times New Roman', Times, serif;
     background-color: #94bcbb;
     display: flex;
     flex-direction: column;

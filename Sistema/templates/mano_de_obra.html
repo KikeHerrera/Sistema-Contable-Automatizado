@@ -1,88 +1,103 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Cálculo de Mano de Obra</h1>
+<link rel="stylesheet" href="../static/css/styleManoObra.css">
 
-<!-- Formulario para agregar empleados -->
-<form method="POST" action=".">
-    {% csrf_token %}
-    <div class="form-group">
-        <label for="nombre">Nombre del Empleado:</label>
-        <input type="text" id="nombre" name="nombre" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label for="salario_nominal_diario">Salario Nominal Diario:</label>
-        <input type="number" id="salario_nominal_diario" name="salario_nominal_diario" step="0.01" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label for="dias_semanales">Días Semanales:</label>
-        <input type="number" id="dias_semanales" name="dias_semanales" min="1" max="7" class="form-control" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Agregar Empleado</button>
-</form>
 
-<!-- Tabla para listar empleados -->
-<table class="table table-bordered mt-4">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Salario Nominal Diario</th>
-            <th>Días Semanales</th>
-            <th>Septimo</th>
-            <th>Vacaciones</th>
-            <th>Aguinaldo</th>
-            <th>ISSS</th>
-            <th>AFP</th>
-            <th>INCAF</th>
-            <th>Costo Real Semanal</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for empleado in empleados %}
-        <tr>
-            <td>{{ empleado.nombre }}</td>
-            <td>{{ empleado.salario_nominal_diario }}</td>
-            <td>{{ empleado.dias_semanales }}</td>
-            <td>{{ empleado.septimo }}</td>
-            <td>{{ empleado.vacaciones }}</td>
-            <td>{{ empleado.aguinaldo }}</td>
-            <td>{{ empleado.isss }}</td>
-            <td>{{ empleado.afp }}</td>
-            <td>{{ empleado.incaf }}</td>
-            <td>{{ empleado.costo_real_semanal }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div class="form-container">
+        <h1>Cálculo de Mano de Obra</h1>
 
-<!-- Totales de las columnas -->
-<div class="totales">
-    <p><strong>Total Salario Nominal Diario:</strong> {{ total_salario_nominal_diario }}</p>
-    <p><strong>Total Septimo:</strong> {{ total_septimo }}</p>
-    <p><strong>Total Vacaciones:</strong> {{ total_vacaciones }}</p>
-    <p><strong>Total Aguinaldo:</strong> {{ total_aguinaldo }}</p>
-    <p><strong>Total ISSS:</strong> {{ total_isss }}</p>
-    <p><strong>Total AFP:</strong> {{ total_afp }}</p>
-    <p><strong>Total INCAF:</strong> {{ total_incaf }}</p>
-    <p><strong>Total Costo Real Semanal:</strong> {{ total_costo_real_semanal }}</p>
-</div>
-    <h1>Cálculo de Mano de Obra</h1>
-    
-    <form method="POST">
-        {% csrf_token %}
-        <label for="empleado">Empleado:</label>
-        <select id="empleado" name="empleado" onchange="this.form.submit()">
-            <option value="">Seleccione un empleado</option>
-            {% for empleado in empleados %}
-                <option value="{{ empleado.id_empleado }}"
-                    {% if empleado_seleccionado and empleado_seleccionado.id_empleado == empleado.id_empleado %}selected{% endif %}>
+        <form method="POST" action=".">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="nombre">Nombre del Empleado:</label>
+                <input type="text" id="nombre" name="nombre" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="salario_nominal_diario">Salario Nominal Diario:</label>
+                <input type="number" id="salario_nominal_diario" name="salario_nominal_diario" step="0.01"
+                    class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="dias_semanales">Días Semanales:</label>
+                <input type="number" id="dias_semanales" name="dias_semanales" min="1" max="7" class="form-control"
+                    required>
+            </div>
+
+            <button class="save-button">Agregar Empleado</button>
+
+        </form>
+    </div>
+
+
+<div class="container">
+    <!-- Formulario de entrada de datos -->
+
+
+    <!-- Tabla de resultados y selección de empleado -->
+    <div class="table-container">
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Salario Nominal Diario</th>
+                    <th>Días Semanales</th>
+                    <th>Septimo</th>
+                    <th>Vacaciones</th>
+                    <th>Aguinaldo</th>
+                    <th>ISSS</th>
+                    <th>AFP</th>
+                    <th>INCAF</th>
+                    <th>Costo Real Semanal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for empleado in empleados %}
+                <tr>
+                    <td>{{ empleado.nombre }}</td>
+                    <td>{{ empleado.salario_nominal_diario }}</td>
+                    <td>{{ empleado.dias_semanales }}</td>
+                    <td>{{ empleado.septimo }}</td>
+                    <td>{{ empleado.vacaciones }}</td>
+                    <td>{{ empleado.aguinaldo }}</td>
+                    <td>{{ empleado.isss }}</td>
+                    <td>{{ empleado.afp }}</td>
+                    <td>{{ empleado.incaf }}</td>
+                    <td>{{ empleado.costo_real_semanal }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Totales de las columnas -->
+        <div class="totales">
+            <p><strong>Total Salario Nominal Diario:</strong> {{ total_salario_nominal_diario }}</p>
+            <p><strong>Total Septimo:</strong> {{ total_septimo }}</p>
+            <p><strong>Total Vacaciones:</strong> {{ total_vacaciones }}</p>
+            <p><strong>Total Aguinaldo:</strong> {{ total_aguinaldo }}</p>
+            <p><strong>Total ISSS:</strong> {{ total_isss }}</p>
+            <p><strong>Total AFP:</strong> {{ total_afp }}</p>
+            <p><strong>Total INCAF:</strong> {{ total_incaf }}</p>
+            <p><strong>Total Costo Real Semanal:</strong> {{ total_costo_real_semanal }}</p>
+        </div>
+
+        <!-- Formulario de selección de empleado -->
+        <h1>Cálculo de Mano de Obra</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <label for="empleado">Empleado:</label>
+            <select id="empleado" name="empleado" onchange="this.form.submit()">
+                <option value="">Seleccione un empleado</option>
+                {% for empleado in empleados %}
+                <option value="{{ empleado.id_empleado }}" 
+                {% if empleado_seleccionado and empleado_seleccionado.id_empleado == empleado.id_empleado %}selected{% endif %}>
                     {{ empleado.nombre }}
                 </option>
-            {% endfor %}
-        </select>
-    </form>
-    
-    {% if empleado_seleccionado %}
+                {% endfor %}
+            </select>
+        </form>
+
+        {% if empleado_seleccionado %}
         <h2>Información del Empleado Seleccionado</h2>
         <table>
             <thead>
@@ -100,13 +115,16 @@
                 </tr>
             </tbody>
         </table>
-        
+
         <!-- Botón que aparece solo si hay un empleado seleccionado -->
         <form method="POST" action="#">
             {% csrf_token %}
             <button type="submit">Calcular Mano de Obra</button>
         </form>
-    {% else %}
+        {% else %}
         <p>No hay empleado seleccionado.</p>
-    {% endif %}
+        {% endif %}
+    </div>
+</div>
+
 {% endblock %}

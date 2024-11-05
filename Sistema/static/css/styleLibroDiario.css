@@ -9,6 +9,8 @@
 
 body {
     background-color: #94bcbb;
+    font-family: 'Times New Roman', Times, serif;
+
 }
 
 h1 {
@@ -51,7 +53,7 @@ h1 {
 
 .table th,
 .table td {
-    border: 1px solid black;
+    border: 1px solid #ddd;
     padding: 10px;
     text-align: center;
     width: 100%;
@@ -59,8 +61,9 @@ h1 {
 }
 
 .table th {
-    background-color: rgba(0, 0, 255, 0.339);
-    
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
 }
 
 .table tr:nth-child(even) {
@@ -90,6 +93,8 @@ nav a {
     color: #333;
     text-decoration: none;
     overflow: hidden;
+    font-family: 'Times New Roman', Times, serif;
+
 }
 
 /* Pseudo-elemento para el fondo animado */
