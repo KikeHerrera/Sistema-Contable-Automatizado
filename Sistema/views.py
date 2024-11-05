@@ -17,6 +17,7 @@ from .forms import EmpleadoForm
 from .models import Asiento, Transaccion, PartidaDiaria
 from .utils import filtrar_o_crear_partida_diaria
 from .models import Empleado
+from .models import CuentaContable
 from django.db import transaction
 
 from django.db.models import QuerySet  # Asegurarse de importar QuerySet si aún no está
@@ -544,6 +545,14 @@ def cierre_contable(request):
     return render(request, 'cierre_contable.html')
 
 
+def catalogo_de_cuenta(request):
+        query = request.GET.get('q', '')  # Obtener el término de búsqueda, si existe
+        if query:
+            cuentas = CuentaContable.objects.filter(nombre__icontains=query)
+        else:
+            cuentas = CuentaContable.objects.all()
+    
+        return render(request, 'catalogo_de_cuenta.html', {'cuentas': cuentas})
 
 
 
@@ -761,3 +770,6 @@ def generar_estado_resultados():
       
         # Retornar la instancia del estado de resultados creado
         return estado_resultados
+    
+
+
