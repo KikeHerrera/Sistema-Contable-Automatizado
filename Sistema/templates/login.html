@@ -1,17 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<form method="POST">
-    {% csrf_token %}
-    {{form.as_p}}
-    
-    <button>
-        Login
-    </button>
-</form> 
-{% if error %}
-<p style="color: red;"><strong>{{error}}</strong></p>
-{% endif %}
-
+<head>
+    <link rel="stylesheet" href="../static/css/styleLogin.css">
+</head>
+<div class="login-container">
+    <div class="login-box">
+        <div class="icon-container">
+            <img src="../static/assets/LogoTech.jpeg" alt="User Icon" class="logo-icon">
+        </div>
+        <h2>INICIAR SESIÓN</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{form.as_p}}
+            <button> Login </button>
+            <div class="input-container">
+                <img src="../static/assets/user.png" alt="User Icon" class="user-icon">
+                <!--<input type="text" id="username" placeholder="USERNAME" required name="username">-->
+            </div>
+            <div class="input-container">
+                <img src="../static/assets/lock.png" alt="Lock Icon" class="lock-icon">
+                <!--<input type="password" id="password" placeholder="*********" required name="password">-->
+                <span class="toggle-password">
+                    <img src="../static/assets/eye.png" alt="Show Password" id="togglePassword" class="eye-icon">
+                </span>
+            </div>
+            <!--<button type="submit" class="login-button">LOGIN</button>-->
+            {% if error %}
+            <div class="error-container" id="error-container">
+                <p style="color: red;"><strong>{{ error }}</strong></p>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
 {% endblock %}
