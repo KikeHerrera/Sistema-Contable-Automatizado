@@ -14,6 +14,9 @@ from .models import Asiento, Transaccion, PartidaDiaria, CuentaContable, Balance
 from .utils import filtrar_o_crear_partida_diaria
 from .models import Empleado
 from .forms import EmpleadoForm 
+from .models import Asiento, Transaccion, PartidaDiaria
+from .utils import filtrar_o_crear_partida_diaria
+from .models import Empleado
 
 def ingresar(request):
     if request.method == "GET":
@@ -27,6 +30,7 @@ def ingresar(request):
         else:
             login(request, user)
             return redirect("home")
+
 
 
 def libro_diario(request):
@@ -47,6 +51,7 @@ def libro_diario(request):
     return render(request, 'libro_diario.html', {
         'partidas_diarias': partidas_diarias,
         'transacciones': transacciones.order_by('-fecha_operacion', '-id_transaccion'),
+        'transacciones': transacciones,
         'partida_seleccionada': partida_seleccionada
     })
 
@@ -156,6 +161,10 @@ def balance_comprobacion(request):
     # Salda todas las cuentas antes de mostrar el balance de comprobación
     saldar_cuentas()
 
+
+
+
+def balance_comprobacion(request):
     # Obtener todas las cuentas contables
     cuentas = CuentaContable.objects.all()
 
@@ -165,6 +174,24 @@ def balance_comprobacion(request):
 
     # Sumar al total de debe y haber con las cuentas actualizadas
     for cuenta in cuentas:
+    # Calcular los saldos de cada cuenta y asignar saldado_acreedor o saldado_deudor
+    for cuenta in cuentas:
+        # Calcular el saldo de la cuenta (Debe - Haber)
+        saldo = cuenta.saldo_debe - cuenta.saldo_haber
+        cuenta.saldo = saldo
+
+        # Asignar el saldo correspondiente
+        if saldo > 0:
+            cuenta.saldado_deudor = saldo
+            cuenta.saldado_acreedor = Decimal('0.0')
+        else:
+            cuenta.saldado_deudor = Decimal('0.0')
+            cuenta.saldado_acreedor = abs(saldo)
+
+        # Guardar la cuenta con el saldo actualizado
+        cuenta.save()
+
+        # Sumar al total de debe y haber
         total_debe += cuenta.saldo_debe
         total_haber += cuenta.saldo_haber
 
@@ -249,6 +276,20 @@ def estados_financieros(request):
 
 def estado_de_capital(request):
     return render(request, 'estado_de_capital.html')
+    empleados = Empleado.objects.all()  # Obtenemos todos los empleados
+    empleado_seleccionado = None
+
+    if request.method == 'POST':
+        empleado_id = request.POST.get('empleado')
+        if empleado_id:
+            empleado_seleccionado = Empleado.objects.get(id_empleado=empleado_id)
+
+    return render(request, 'mano_de_obra.html', {
+        'empleados': empleados,
+        'empleado_seleccionado': empleado_seleccionado
+    })
+
+
 
 
 def estado_de_resultados(request):
@@ -430,3 +471,15 @@ def balance_general(request):
     'balance_general_haber': balance_seleccionado.balance_general_haber if balance_seleccionado else None,
 })
  
+def libro_mayor(request):
+    return render(request, 'libro_mayor.html')
+
+def cierre_contable(request):
+    return render(request, 'cierre_contable.html')
+
+
+
+
+
+def handle_not_found(request, exception):
+    return redirect('home')
