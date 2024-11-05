@@ -16,6 +16,8 @@ from .models import Empleado
 from .forms import EmpleadoForm 
 from django.db import transaction
 
+from django.db.models import QuerySet  # Asegurarse de importar QuerySet si aún no está
+
 
 def ingresar(request):
     if request.method == "GET":
@@ -30,7 +32,6 @@ def ingresar(request):
             login(request, user)
             return redirect("home")
 
-
 def libro_diario(request):
     # Obtener todas las partidas diarias disponibles
     partidas_diarias = PartidaDiaria.objects.all()
@@ -41,14 +42,14 @@ def libro_diario(request):
 
     # Si se selecciona una partida diaria específica
     partida_seleccionada = request.GET.get('partida_diaria', partida_diaria_hoy.id_partida_diaria if partida_diaria_hoy else None)
-    transacciones = None
+    transacciones = Transaccion.objects.none()  # Iniciar como queryset vacío
     if partida_seleccionada:
         transacciones = Transaccion.objects.filter(id_partida_diaria=partida_seleccionada)
 
     # Renderizar la página de inicio con la lista de partidas diarias y transacciones
     return render(request, 'libro_diario.html', {
         'partidas_diarias': partidas_diarias,
-        'transacciones': transacciones.order_by('-fecha_operacion', '-id_transaccion'),
+        'transacciones': transacciones.order_by('-fecha_operacion', '-id_transaccion') if isinstance(transacciones, QuerySet) else transacciones,
         'partida_seleccionada': partida_seleccionada
     })
 
