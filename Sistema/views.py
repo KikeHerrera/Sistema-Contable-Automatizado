@@ -59,52 +59,58 @@ def cerrarSesion(request):
     logout(request)
     return redirect("home")
 
+def registrar_transaccion(fecha, contenido, cuenta_deudor, cuenta_acreedor, monto):
+    # Crear el objeto Transaccion y asignar valores
+    transaccion = Transaccion(
+        fecha=fecha,
+        contenido=contenido,
+        total_debe=monto,
+        total_haber=monto,
+        id_partida_diaria=filtrar_o_crear_partida_diaria()
+    )
+    transaccion.save()
+    
+    # Actualizar saldos de las cuentas
+    cuenta_deudor.saldo_debe += monto
+    cuenta_deudor.save()
+    
+    cuenta_acreedor.saldo_haber += monto
+    cuenta_acreedor.save()
+    
+    # Crear asientos contables
+    Asiento.objects.create(
+        id_transaccion=transaccion,
+        id_cuenta=cuenta_deudor,
+        monto_debe=monto,
+        monto_haber=0,
+    )
+
+    Asiento.objects.create(
+        id_transaccion=transaccion,
+        id_cuenta=cuenta_acreedor,
+        monto_debe=0,
+        monto_haber=monto,
+    )
+    
+    return transaccion
+
+
 def transaccion(request):
     if request.method == 'POST':
         formularioBase = TransaccionForm(request.POST)
         formularioAsientoContable = AsientoCustomForm(request.POST)
 
         if formularioBase.is_valid() and formularioAsientoContable.is_valid():
-            # Guardar la transacción
-            
-
-            # Crear el asiento a partir de los datos del formulario
+            # Extraer datos del formulario
             cuenta_deudor = formularioAsientoContable.cleaned_data['cuenta_deudor']
             cuenta_acreedor = formularioAsientoContable.cleaned_data['cuenta_acreedor']
             monto = formularioAsientoContable.cleaned_data['monto']
-        
+            fecha = formularioBase.cleaned_data['fecha']
+            contenido = formularioBase.cleaned_data['contenido']
 
-            transaccion = formularioBase.save(commit=False)
-            transaccion.total_debe = monto
-            transaccion.total_haber = monto
-            transaccion.id_partida_diaria = filtrar_o_crear_partida_diaria()
+            # Llamar a la función registrar_transaccion para registrar la transacción y los asientos
+            registrar_transaccion(fecha, contenido, cuenta_deudor, cuenta_acreedor, monto)
 
-            transaccion.save()
-            
-            cuenta_acreedor.saldo_haber += monto
-            cuenta_acreedor.save()
-
-            cuenta_deudor.saldo_debe += monto
-            cuenta_deudor.save()
-
-
-
-            # Crear Asientos (uno para el Debe y otro para el Haber)
-            Asiento.objects.create(
-                id_transaccion=transaccion,
-                id_cuenta=cuenta_deudor,
-                monto_debe=monto,
-                monto_haber=0,
-            )
-
-            Asiento.objects.create(
-                id_transaccion=transaccion,
-                id_cuenta=cuenta_acreedor,
-                monto_debe=0,
-                monto_haber=monto,
-            )
-
-            
             return redirect('home')  # Redirige a una página de éxito
         else:
             # Si hay errores, vuelve a renderizar el formulario con los errores
@@ -633,7 +639,7 @@ def generar_estado_resultados():
             saldo_haber=ingresos_totales.saldado_acreedor + costos_venta_totales.saldado_acreedor,
             id_estado_resultado=estado_resultados
         )
-        saldar(utilidad_bruta)
+        saldar_acreedora(utilidad_bruta)
         utilidad_bruta.save()
 
         # Calcular Utilidad Neta (Utilidad Bruta - Gastos Totales)
@@ -643,7 +649,7 @@ def generar_estado_resultados():
             saldo_haber=utilidad_bruta.saldado_acreedor + gastos_totales.saldado_acreedor,
             id_estado_resultado=estado_resultados
         )
-        saldar(utilidad_neta)
+        saldar_acreedora(utilidad_neta)
         utilidad_neta.save()
       
         # Retornar la instancia del estado de resultados creado

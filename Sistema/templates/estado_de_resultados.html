@@ -42,6 +42,12 @@
                 <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
             </tr>
             {% endfor %}
+            <tr>
+                <td></td>
+                <td><strong>{{ ingresos_totales.nombre }}</strong></td>
+                <td><strong>{{ ingresos_totales.saldado_deudor|floatformat:2 }}</strong></td>
+                <td><strong>{{ ingresos_totales.saldado_acreedor|floatformat:2 }}</strong></td>
+            </tr>
         </tbody>
     </table>
 
@@ -66,6 +72,12 @@
             <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
         </tr>
         {% endfor %}
+        <tr>
+            <td></td>
+            <td><strong>{{ costos_venta_totales.nombre }}</strong></td>
+            <td><strong>{{ costos_venta_totales.saldado_deudor|floatformat:2 }}</strong></td>
+            <td><strong>{{ costos_venta_totales.saldado_acreedor|floatformat:2 }}</strong></td>
+        </tr>
     </tbody>
 </table>
 
@@ -90,6 +102,12 @@
             <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
         </tr>
         {% endfor %}
+        <tr>
+            <td></td>
+            <td><strong>{{ gastos_totales.nombre }}</strong></td>
+            <td><strong>{{ gastos_totales.saldado_deudor|floatformat:2 }}</strong></td>
+            <td><strong>{{ gastos_totales.saldado_acreedor|floatformat:2 }}</strong></td>
+        </tr>
     </tbody>
 </table>
 <!-- Utilidad Bruta -->
@@ -104,13 +122,22 @@
         </tr>
     </thead>
     <tbody>
-        {% for cuenta in cuenta_utilidad_bruta %}
         <tr>
-            <td>{{ cuenta.nombre }}</td>
-            <td>{{ cuenta.saldo_deudor|floatformat:2 }}</td>
-            <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
+            <td>{{ ingresos_totales.nombre }}</td>
+            <td>{{ ingresos_totales.saldado_deudor|floatformat:2 }}</td>
+            <td>{{ ingresos_totales.saldado_acreedor|floatformat:2 }}</td>
         </tr>
-        {% endfor %}
+        <tr>
+            <td>{{ costos_venta_totales.nombre }}</td>
+            <td>{{ costos_venta_totales.saldado_deudor|floatformat:2 }}</td>
+            <td>{{ costos_venta_totales.saldado_acreedor|floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <td><strong>{{ utilidad_bruta.nombre }}</strong></td>
+            <td><strong>{{ utilidad_bruta.saldado_deudor|floatformat:2 }}</strong></td>
+            <td><strong>{{ utilidad_bruta.saldado_acreedor|floatformat:2 }}</strong></td>
+        </tr>
+        
     </tbody>
 </table>
 
@@ -125,13 +152,22 @@
         </tr>
     </thead>
     <tbody>
-        {% for cuenta in cuenta_utilidad_neta %}
         <tr>
-            <td>{{ cuenta.nombre }}</td>
-            <td>{{ cuenta.saldo_deudor|floatformat:2 }}</td>
-            <td>{{ cuenta.saldo_acreedor|floatformat:2 }}</td>
+            <td>{{ utilidad_bruta.nombre }}</td>
+            <td>{{ utilidad_bruta.saldado_deudor|floatformat:2 }}</td>
+            <td>{{ utilidad_bruta.saldado_acreedor|floatformat:2 }}</td>
         </tr>
-        {% endfor %}
+        <tr>
+            <td>{{ gastos_totales.nombre }}</td>
+            <td>{{ gastos_totales.saldado_deudor|floatformat:2 }}</td>
+            <td>{{ gastos_totales.saldado_acreedor|floatformat:2 }}</td>
+            
+        </tr>
+        <tr>
+            <td><strong>{{ utilidad_neta.nombre }}</strong></td>
+            <td><strong>{{ utilidad_neta.saldado_deudor|floatformat:2 }}</strong></td>
+            <td><strong>{{ utilidad_neta.saldado_acreedor|floatformat:2 }}</strong></td>            
+        </tr>
     </tbody>
 </table>
 
