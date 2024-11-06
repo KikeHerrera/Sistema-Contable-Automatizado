@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Costeo de software</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div>
+            <label for="nombre_proyecto">Nombre del Proyecto:</label>
+            <input type="text" id="nombre_proyecto" name="nombre_proyecto">
+        </div>
+        
+        <div>
+            <label for="duracion_proyecto">Duración del Proyecto (meses):</label>
+            <input type="number" step="0.01" id="duracion_proyecto" name="duracion_proyecto">
+        </div>
+        
+        <div>
+            <label for="costo_materiales">Costo de Materiales Directos:</label>
+            <input type="number" step="0.01" id="costo_materiales" name="costo_materiales">
+        </div>
+        
+        <button type="submit">Calcular Costo Total</button>
+    </form>
+
+    <!-- Tabla para mostrar el nombre y el costo total de los proyectos -->
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre del Proyecto</th>
+                <th>Costo Total</th>
+                <th>Precio de Venta</th>
+                <th>Ganancia Bruta</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for proyecto in proyectos %}
+                <tr>
+                    <td>{{ proyecto.nombre_proyecto }}</td>
+                    <td>{{ proyecto.costo_total }}</td>
+                    <td>{{ proyecto.precio_venta }}</td>
+                    <td>{{ proyecto.ganancia_bruta }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

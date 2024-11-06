@@ -8,6 +8,10 @@ class LibroMayor(models.Model):
 
     def __str__(self):
         return f"Libro Mayor {self.id_libro_mayor}"
+    
+
+
+
 
 
 class PartidaDiaria(models.Model):
@@ -91,10 +95,45 @@ class Empleado(models.Model):
             self.septimo + self.vacaciones + self.aguinaldo + self.isss + self.afp + self.incaf
         )
 
+    @staticmethod
+    def total_costo_real_semanal():
+        return sum(emp.costo_real_semanal for emp in Empleado.objects.all())
+
     def save(self, *args, **kwargs):
         # Calcular los costos antes de guardar
         self.calcular_costos()
         super().save(*args, **kwargs)
+
+
+
+
+
+
+class Proyecto(models.Model):
+    nombre_proyecto = models.CharField(max_length=100)
+    duracion_proyecto = models.DecimalField(max_digits=5, decimal_places=2)  # Duración en formato decimal
+    costo_materiales = models.DecimalField(max_digits=10, decimal_places=2)
+    precio_venta = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    ganancia_bruta = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+    @property
+    def costo_total(self):
+        # Calcular costo mano de obra
+        total_costo_real_semanal = Empleado.total_costo_real_semanal()  # Obtener el total costo real semanal desde Empleado
+        costo_mano_de_obra = (total_costo_real_semanal * Decimal(4)) * self.duracion_proyecto
+        # Calcular costo total
+        return self.costo_materiales + costo_mano_de_obra
+
+    def calcular_precio_venta_y_ganancia(self):
+        # Calcular precio de venta y ganancia bruta
+        aumento_precio = Decimal(20) / Decimal(100)  # Convertir el porcentaje a Decimal
+        self.precio_venta = self.costo_total + (self.costo_total * aumento_precio)
+        self.ganancia_bruta = self.precio_venta - self.costo_total
+        self.save()
+
+    def __str__(self):
+        return self.nombre_proyecto
+    
 
 # Modelo para Balance General
 class BalanceGeneral(models.Model):
