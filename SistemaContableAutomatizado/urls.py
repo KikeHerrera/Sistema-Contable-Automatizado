@@ -40,6 +40,7 @@ urlpatterns = [
     path('estado_de_resultados/', SistemaViews.estado_de_resultados, name='estado_de_resultados'),
     path('balance_general/', SistemaViews.balance_general, name='balance_general'),
     path('catalogo_de_cuenta/', SistemaViews.catalogo_de_cuenta, name='catalogo_de_cuenta'),
+    path('costeo_software/', SistemaViews.costeo_software, name='costeo_software'),
 
 ]
 

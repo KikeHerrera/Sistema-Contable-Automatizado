@@ -17,10 +17,39 @@ from .forms import EmpleadoForm
 from .models import Asiento, Transaccion, PartidaDiaria
 from .utils import filtrar_o_crear_partida_diaria
 from .models import Empleado
+from .models import Proyecto
 from .models import CuentaContable
 from django.db import transaction
-
 from django.db.models import QuerySet  # Asegurarse de importar QuerySet si aún no está
+
+
+
+
+def costeo_software(request):
+    # Obtener el total_costo_real_semanal desde el modelo Empleado
+    total_costo_real_semanal = Empleado.total_costo_real_semanal()
+
+    if request.method == 'POST':
+        # Obtener los datos del formulario y convertirlos a Decimal donde sea necesario
+        nombre_proyecto = request.POST['nombre_proyecto']
+        duracion_proyecto = Decimal(request.POST['duracion_proyecto'])  # Convertir a Decimal
+        costo_materiales = Decimal(request.POST['costo_materiales'])  # Convertir a Decimal
+        
+        # Crear la instancia de Proyecto
+        proyecto = Proyecto(
+            nombre_proyecto=nombre_proyecto,
+            duracion_proyecto=duracion_proyecto,
+            costo_materiales=costo_materiales
+        )
+        
+        # Calcular precio de venta y ganancia bruta usando el total_costo_real_semanal
+        proyecto.calcular_precio_venta_y_ganancia()
+        
+        return redirect('costeo_software')  # Redirigir después de guardar
+
+    # Enviar datos a la plantilla
+    proyectos = Proyecto.objects.all()
+    return render(request, 'costeo_software.html', {'proyectos': proyectos})
 
 
 def ingresar(request):
@@ -530,11 +559,12 @@ def balance_general(request):
     'balance_general_haber': balance_seleccionado.balance_general_haber if balance_seleccionado else None,
 })
  
-def libro_mayor(request):
-    return render(request, 'libro_mayor.html')
+
 
 def cierre_contable(request):
     return render(request, 'cierre_contable.html')
+
+
 
 
 def catalogo_de_cuenta(request):
